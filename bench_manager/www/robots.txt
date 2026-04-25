@@ -1,0 +1,39 @@
+# robots.txt for Worf App Store
+# Allow all crawlers to access the site
+
+User-agent: *
+Allow: /
+
+# Disallow authenticated routes
+Disallow: /signin
+Disallow: /signup
+Disallow: /dashboard
+Disallow: /my-apps
+Disallow: /purchases
+Disallow: /wishlist
+Disallow: /settings
+Disallow: /developer/
+Disallow: /admin/
+
+# Disallow search and filter pages
+Disallow: /search
+
+# Disallow policy pages (legal content)
+Disallow: /terms
+Disallow: /privacy
+Disallow: /developer-policy
+Disallow: /buyer-policy
+Disallow: /refunds
+
+# Disallow API and private routes
+Disallow: /api
+Disallow: /app
+Disallow: /login
+Disallow: /private
+Disallow: /files
+
+# Sitemap location
+Sitemap: https://worf.cloud/sitemap.xml
+
+# Crawl delay (optional, adjust based on server capacity)
+Crawl-delay: 1

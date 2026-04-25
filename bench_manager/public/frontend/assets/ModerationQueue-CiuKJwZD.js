@@ -1,0 +1,2 @@
+import{h as a,j as t,f as o}from"./vue-vendor-BNGP8MTa.js";const u={__name:"ModerationQueue",setup(r){return(n,e)=>(o(),a("div",null,[...e[0]||(e[0]=[t("h1",{class:"text-2xl font-bold text-gray-900 dark:text-white mb-6"},"Moderation Queue",-1),t("p",{class:"text-gray-600 dark:text-gray-400"},"Moderation Queue page - Coming Soon",-1)])]))}};export{u as default};
+//# sourceMappingURL=ModerationQueue-CiuKJwZD.js.map

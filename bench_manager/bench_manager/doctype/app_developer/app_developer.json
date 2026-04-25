@@ -1,0 +1,375 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-04-21 05:15:00",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "basic_info_section",
+  "naming_series",
+  "user",
+  "column_break_1",
+  "developer_name",
+  "contact_details_section",
+  "email",
+  "phone",
+  "column_break_2",
+  "company_name",
+  "website",
+  "profile_section",
+  "bio",
+  "column_break_3",
+  "avatar",
+  "social_links_tab",
+  "github_username",
+  "twitter_username",
+  "linkedin_url",
+  "column_break_4",
+  "column_break_5",
+  "status_tab",
+  "is_active",
+  "is_verified",
+  "verification_date",
+  "column_break_6",
+  "column_break_7",
+  "privacy_settings_tab",
+  "show_email",
+  "show_phone",
+  "show_company",
+  "show_social_links",
+  "show_stats",
+  "column_break_9",
+  "column_break_10",
+  "statistics_tab",
+  "total_apps",
+  "total_downloads",
+  "total_earnings",
+  "payment_settings_tab",
+  "payment_method",
+  "paypal_email",
+  "stripe_account_id",
+  "column_break_8",
+  "bank_account_number",
+  "bank_ifsc",
+  "bank_account_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "basic_info_section",
+   "fieldtype": "Section Break",
+   "options": "fa fa-user"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "no_copy": 1,
+   "options": "DEV-.YYYY.-",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "developer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Developer Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "contact_details_section",
+   "fieldtype": "Section Break",
+   "options": "fa fa-address-card"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email",
+   "options": "Email",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Phone"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Company Name"
+  },
+  {
+   "fieldname": "website",
+   "fieldtype": "Data",
+   "label": "Website"
+  },
+  {
+   "fieldname": "profile_section",
+   "fieldtype": "Section Break",
+   "options": "fa fa-id-card"
+  },
+  {
+   "fieldname": "bio",
+   "fieldtype": "Text",
+   "label": "Bio"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "avatar",
+   "fieldtype": "Attach Image",
+   "label": "Avatar"
+  },
+  {
+   "fieldname": "social_links_tab",
+   "fieldtype": "Tab Break",
+   "label": "Social Links",
+   "options": "fa fa-share-alt"
+  },
+  {
+   "fieldname": "github_username",
+   "fieldtype": "Data",
+   "label": "GitHub Username"
+  },
+  {
+   "fieldname": "twitter_username",
+   "fieldtype": "Data",
+   "label": "Twitter Username"
+  },
+  {
+   "fieldname": "linkedin_url",
+   "fieldtype": "Data",
+   "label": "LinkedIn URL"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status_tab",
+   "fieldtype": "Tab Break",
+   "label": "Status",
+   "options": "fa fa-check-circle"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Active"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_verified",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Verified"
+  },
+  {
+   "fieldname": "verification_date",
+   "fieldtype": "Date",
+   "label": "Verification Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "privacy_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "Privacy Settings",
+   "options": "fa fa-shield-alt"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_email",
+   "fieldtype": "Check",
+   "label": "Show Email to Public"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_phone",
+   "fieldtype": "Check",
+   "label": "Show Phone to Public"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_company",
+   "fieldtype": "Check",
+   "label": "Show Company to Public"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_social_links",
+   "fieldtype": "Check",
+   "label": "Show Social Links to Public"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_stats",
+   "fieldtype": "Check",
+   "label": "Show Statistics to Public"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "statistics_tab",
+   "fieldtype": "Tab Break",
+   "label": "Statistics",
+   "options": "fa fa-chart-line"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_apps",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Apps",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_downloads",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Downloads",
+   "read_only": 1
+  },
+  {
+   "default": "0.00",
+   "fieldname": "total_earnings",
+   "fieldtype": "Currency",
+   "label": "Total Earnings",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "Payment Settings",
+   "options": "fa fa-credit-card"
+  },
+  {
+   "fieldname": "payment_method",
+   "fieldtype": "Select",
+   "label": "Payment Method",
+   "options": "PayPal\nStripe\nBank Transfer"
+  },
+  {
+   "depends_on": "payment_method",
+   "fieldname": "paypal_email",
+   "fieldtype": "Data",
+   "label": "PayPal Email"
+  },
+  {
+   "depends_on": "payment_method",
+   "fieldname": "stripe_account_id",
+   "fieldtype": "Data",
+   "label": "Stripe Account ID"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "payment_method",
+   "fieldname": "bank_account_number",
+   "fieldtype": "Data",
+   "label": "Bank Account Number"
+  },
+  {
+   "depends_on": "payment_method",
+   "fieldname": "bank_ifsc",
+   "fieldtype": "Data",
+   "label": "Bank IFSC"
+  },
+  {
+   "depends_on": "payment_method",
+   "fieldname": "bank_account_name",
+   "fieldtype": "Data",
+   "label": "Bank Account Name"
+  }
+ ],
+ "links": [
+  {
+   "link_doctype": "App",
+   "link_fieldname": "developer"
+  }
+ ],
+ "modified": "2026-04-21 12:42:41.178517",
+ "modified_by": "Administrator",
+ "module": "Bench Manager",
+ "name": "App Developer",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "App Developer",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Guest"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

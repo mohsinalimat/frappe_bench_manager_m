@@ -1,0 +1,436 @@
+{
+ "actions": [],
+ "creation": "2017-08-28 16:04:38.088230",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_1",
+  "frappe_user",
+  "column_break_2",
+  "frappe_git_branch",
+  "server_ip",
+  "general_settings",
+  "background_workers",
+  "auto_email_id",
+  "global_help_setup",
+  "gunicorn_workers",
+  "section_break_36",
+  "auto_update",
+  "use_tls",
+  "rebase_on_pull",
+  "restart_supervisor_on_update",
+  "serve_default_site",
+  "update_bench_on_update",
+  "password_settings",
+  "admin_password",
+  "password_root",
+  "column_break_16",
+  "mysql_root_password",
+  "dropbox_settings",
+  "app_access_key",
+  "send_notifications_to",
+  "send_email_for_successful_backup",
+  "file_backup",
+  "allow_dropbox_access",
+  "section_break_38",
+  "app_secret_key",
+  "dropbox_access_token",
+  "dropbox_access_key",
+  "dropbox_access_secret",
+  "github_settings",
+  "github_username",
+  "shallow_clone",
+  "section_break_37",
+  "github_password",
+  "git_user_email",
+  "ssh_settings_section",
+  "use_ssh_for_git",
+  "ssh_key_generated",
+  "ssh_column_break",
+  "github_connection_status",
+  "ssh_public_key",
+  "ssh_private_key",
+  "mail_settings",
+  "mail_port",
+  "mail_server",
+  "column_break_30",
+  "mail_password",
+  "mail_login",
+  "redis_and_ports",
+  "redis_socketio",
+  "redis_queue",
+  "redis_cache",
+  "column_break_31",
+  "socketio_port",
+  "webserver_port",
+  "file_watcher_port",
+  "section_break_41",
+  "last_sync_timestamp"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "frappe_user",
+   "fieldtype": "Data",
+   "label": "Frappe User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "frappe_git_branch",
+   "fieldtype": "Data",
+   "label": "Frappe Git Branch",
+   "read_only": 1
+  },
+  {
+   "description": "Server's public IP address for DNS configuration",
+   "fieldname": "server_ip",
+   "fieldtype": "Data",
+   "label": "Server IP Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "general_settings",
+   "fieldtype": "Section Break",
+   "label": "General Settings"
+  },
+  {
+   "fieldname": "background_workers",
+   "fieldtype": "Int",
+   "label": "Background Workers",
+   "read_only": 1
+  },
+  {
+   "fieldname": "auto_email_id",
+   "fieldtype": "Data",
+   "label": "Auto Email ID"
+  },
+  {
+   "fieldname": "global_help_setup",
+   "fieldtype": "Data",
+   "label": "Global Help Setup"
+  },
+  {
+   "fieldname": "gunicorn_workers",
+   "fieldtype": "Int",
+   "label": "Gunicorn Workers",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_36",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "auto_update",
+   "fieldtype": "Check",
+   "label": "Auto Update"
+  },
+  {
+   "default": "0",
+   "fieldname": "use_tls",
+   "fieldtype": "Check",
+   "label": "Use TLS"
+  },
+  {
+   "default": "0",
+   "fieldname": "rebase_on_pull",
+   "fieldtype": "Check",
+   "label": "Rebase On Pull"
+  },
+  {
+   "default": "0",
+   "fieldname": "restart_supervisor_on_update",
+   "fieldtype": "Check",
+   "label": "Restart Supervisor On Update"
+  },
+  {
+   "default": "0",
+   "fieldname": "serve_default_site",
+   "fieldtype": "Check",
+   "label": "Serve Default Site"
+  },
+  {
+   "default": "0",
+   "fieldname": "update_bench_on_update",
+   "fieldtype": "Check",
+   "label": "Update Bench On Update"
+  },
+  {
+   "fieldname": "password_settings",
+   "fieldtype": "Section Break",
+   "label": "Password Settings"
+  },
+  {
+   "description": "Default password for new site administrators",
+   "fieldname": "admin_password",
+   "fieldtype": "Password",
+   "label": "Default Admin Password"
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "MySQL/MariaDB root password for site operations",
+   "fieldname": "mysql_root_password",
+   "fieldtype": "Password",
+   "label": "MySQL Root Password"
+  },
+  {
+   "fieldname": "dropbox_settings",
+   "fieldtype": "Section Break",
+   "label": "Dropbox Settings"
+  },
+  {
+   "fieldname": "section_break_38",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dropbox_access_key",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "Dropbox Access Key"
+  },
+  {
+   "fieldname": "github_settings",
+   "fieldtype": "Section Break",
+   "label": "Github Settings"
+  },
+  {
+   "description": "Your GitHub username (e.g., amitascra)",
+   "fieldname": "github_username",
+   "fieldtype": "Data",
+   "label": "GitHub Username"
+  },
+  {
+   "default": "0",
+   "description": "Enable faster cloning with less disk space (recommended for production)",
+   "fieldname": "shallow_clone",
+   "fieldtype": "Check",
+   "label": "Shallow Clone"
+  },
+  {
+   "fieldname": "section_break_37",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "GitHub Personal Access Token (PAT) - Generate at github.com/settings/tokens",
+   "fieldname": "github_password",
+   "fieldtype": "Password",
+   "label": "GitHub Token (PAT)"
+  },
+  {
+   "description": "Your email for git commits (e.g., amit@example.com)",
+   "fieldname": "git_user_email",
+   "fieldtype": "Data",
+   "label": "Git User Email"
+  },
+  {
+   "fieldname": "ssh_settings_section",
+   "fieldtype": "Section Break",
+   "label": "SSH Configuration"
+  },
+  {
+   "default": "1",
+   "description": "Use SSH keys for git operations (recommended for security)",
+   "fieldname": "use_ssh_for_git",
+   "fieldtype": "Check",
+   "label": "Use SSH for Git"
+  },
+  {
+   "default": "0",
+   "description": "Indicates if SSH keys have been generated",
+   "fieldname": "ssh_key_generated",
+   "fieldtype": "Check",
+   "label": "SSH Keys Generated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ssh_column_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "GitHub connection status",
+   "fieldname": "github_connection_status",
+   "fieldtype": "Data",
+   "label": "Connection Status",
+   "read_only": 1
+  },
+  {
+   "description": "SSH public key - Add this to your GitHub account",
+   "fieldname": "ssh_public_key",
+   "fieldtype": "Long Text",
+   "label": "SSH Public Key",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ssh_private_key",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "SSH Private Key"
+  },
+  {
+   "fieldname": "mail_settings",
+   "fieldtype": "Section Break",
+   "label": "Mail Settings"
+  },
+  {
+   "fieldname": "mail_port",
+   "fieldtype": "Data",
+   "label": "Mail Port"
+  },
+  {
+   "fieldname": "mail_server",
+   "fieldtype": "Data",
+   "label": "Mail Server"
+  },
+  {
+   "fieldname": "column_break_30",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mail_password",
+   "fieldtype": "Password",
+   "label": "Mail Password"
+  },
+  {
+   "fieldname": "mail_login",
+   "fieldtype": "Data",
+   "label": "Mail Login"
+  },
+  {
+   "fieldname": "redis_and_ports",
+   "fieldtype": "Section Break",
+   "label": "Redis and Ports"
+  },
+  {
+   "fieldname": "redis_socketio",
+   "fieldtype": "Data",
+   "label": "Redis Socketio"
+  },
+  {
+   "fieldname": "redis_queue",
+   "fieldtype": "Data",
+   "label": "Redis Queue"
+  },
+  {
+   "fieldname": "redis_cache",
+   "fieldtype": "Data",
+   "label": "Redis Cache"
+  },
+  {
+   "fieldname": "column_break_31",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "socketio_port",
+   "fieldtype": "Int",
+   "label": "Socketio Port"
+  },
+  {
+   "fieldname": "webserver_port",
+   "fieldtype": "Int",
+   "label": "Webserver Port"
+  },
+  {
+   "fieldname": "file_watcher_port",
+   "fieldtype": "Int",
+   "label": "File Watcher Port"
+  },
+  {
+   "fieldname": "section_break_41",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "last_sync_timestamp",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Last Sync Timestamp",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "allow_dropbox_access",
+   "fieldtype": "Button",
+   "label": "Allow Dropbox Access"
+  },
+  {
+   "fieldname": "app_access_key",
+   "fieldtype": "Data",
+   "label": "App Access Key"
+  },
+  {
+   "fieldname": "app_secret_key",
+   "fieldtype": "Password",
+   "label": "App Secret Key"
+  },
+  {
+   "fieldname": "dropbox_access_token",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "Dropbox Access Token"
+  },
+  {
+   "fieldname": "dropbox_access_secret",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "Dropbox Access Secret"
+  },
+  {
+   "fieldname": "send_notifications_to",
+   "fieldtype": "Data",
+   "label": "Send Notifications To"
+  },
+  {
+   "default": "0",
+   "fieldname": "send_email_for_successful_backup",
+   "fieldtype": "Check",
+   "label": "Send Email For Successful Backup"
+  },
+  {
+   "default": "0",
+   "fieldname": "file_backup",
+   "fieldtype": "Check",
+   "label": "File Backup"
+  },
+  {
+   "fieldname": "password_root",
+   "fieldtype": "Password",
+   "label": "Password Root"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-04-15 19:02:21.703623",
+ "modified_by": "Administrator",
+ "module": "Bench Manager",
+ "name": "Bench Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

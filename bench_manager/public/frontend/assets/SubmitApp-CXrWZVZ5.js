@@ -1,0 +1,2 @@
+import{h as e,j as t,f as p}from"./vue-vendor-BNGP8MTa.js";const a={class:"min-h-screen bg-gray-50 py-8"},x={__name:"SubmitApp",setup(o){return(l,s)=>(p(),e("div",a,[...s[0]||(s[0]=[t("div",{class:"w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16"},[t("div",{class:"max-w-[1600px] mx-auto"},[t("h1",{class:"text-2xl font-bold text-gray-900 mb-6"},"Submit App"),t("p",{class:"text-gray-600"},"Submit App page - Coming Soon")])],-1)])]))}};export{x as default};
+//# sourceMappingURL=SubmitApp-CXrWZVZ5.js.map

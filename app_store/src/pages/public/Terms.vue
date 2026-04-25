@@ -1,0 +1,81 @@
+<template>
+  <div class="py-12">
+    <div class="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8">Terms of Service</h1>
+        
+        <div class="prose prose-lg dark:prose-invert max-w-none">
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Last updated: April 21, 2026
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">1. Acceptance of Terms</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            By accessing and using the Frappe App Store, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">2. Description of Service</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            The Frappe App Store is a marketplace for Frappe applications where developers can list, distribute, and sell their applications, and users can discover, purchase, and download applications for their Frappe instances.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">3. User Accounts</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            You are responsible for maintaining the confidentiality of your account and password. You agree to notify us immediately of any unauthorized use of your account.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">4. Developer Responsibilities</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Developers who list applications on the Frappe App Store agree to:
+          </p>
+          <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 mb-4">
+            <li>Provide accurate and complete information about their applications</li>
+            <li>Ensure their applications comply with all applicable laws and regulations</li>
+            <li>Maintain and support their applications</li>
+            <li>Respond to user inquiries and support requests in a timely manner</li>
+            <li>Not engage in fraudulent or deceptive practices</li>
+          </ul>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">5. Application Licensing</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            All applications listed on the Frappe App Store are subject to their respective licensing terms. Users must comply with the license terms of each application they download or purchase.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">6. Payment and Refunds</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Payments for paid applications are processed through our payment partners. Refund requests are handled in accordance with our Refund Policy.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">7. Intellectual Property</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            All content on the Frappe App Store, including but not limited to text, graphics, logos, and software, is the property of Frappe or its licensors and is protected by copyright laws.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">8. Limitation of Liability</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            The Frappe App Store shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your use of the service.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">9. Termination</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            We reserve the right to terminate or suspend your account at any time for violation of these Terms of Service or for any other reason at our sole discretion.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">10. Changes to Terms</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            We may update these Terms of Service from time to time. Continued use of the service after changes constitutes acceptance of the new terms.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">11. Contact Information</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            For questions about these Terms of Service, please contact us at legal@frappe.io
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+// Terms of Service page
+</script>

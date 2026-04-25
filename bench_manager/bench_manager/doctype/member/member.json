@@ -1,0 +1,181 @@
+{
+ "actions": [],
+ "autoname": "field:member_name",
+ "creation": "2026-04-21 02:35:00",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "member_name",
+  "column_break_2",
+  "email",
+  "user",
+  "section_break_contact",
+  "phone",
+  "company",
+  "designation",
+  "profile_image",
+  "section_break_account",
+  "member_since",
+  "member_status",
+  "total_purchases",
+  "billing_address",
+  "gstin",
+  "notes",
+  "section_break_apps",
+  "purchased_apps",
+  "section_break_wishlist",
+  "wishlist"
+ ],
+ "fields": [
+  {
+   "fieldname": "member_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Member Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "fieldname": "section_break_contact",
+   "fieldtype": "Section Break",
+   "label": "Contact Information"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "Company"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fieldname": "profile_image",
+   "fieldtype": "Attach Image",
+   "label": "Profile Image"
+  },
+  {
+   "fieldname": "section_break_account",
+   "fieldtype": "Section Break",
+   "label": "Account Details"
+  },
+  {
+   "fieldname": "member_since",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Member Since"
+  },
+  {
+   "default": "Active",
+   "fieldname": "member_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Member Status",
+   "options": "Active\nSuspended\nInactive"
+  },
+  {
+   "fieldname": "total_purchases",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Purchases",
+   "read_only": 1
+  },
+  {
+   "fieldname": "billing_address",
+   "fieldtype": "Link",
+   "label": "Billing Address",
+   "options": "Address"
+  },
+  {
+   "fieldname": "gstin",
+   "fieldtype": "Data",
+   "label": "GSTIN"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "section_break_apps",
+   "fieldtype": "Section Break",
+   "label": "Purchased Apps"
+  },
+  {
+   "fieldname": "purchased_apps",
+   "fieldtype": "Table",
+   "label": "Purchased Apps",
+   "options": "Member App"
+  },
+  {
+   "fieldname": "section_break_wishlist",
+   "fieldtype": "Section Break",
+   "label": "Wishlist"
+  },
+  {
+   "fieldname": "wishlist",
+   "fieldtype": "Table",
+   "label": "Wishlist",
+   "options": "Member Wishlist"
+  }
+ ],
+ "links": [],
+ "modified": "2026-04-21 14:51:31.397187",
+ "modified_by": "Administrator",
+ "module": "Bench Manager",
+ "name": "Member",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Member"
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "App Developer"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "member_since",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

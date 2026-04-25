@@ -1,0 +1,39 @@
+{
+ "cards": [
+  {
+   "hidden": 0,
+   "label": "Bench Setup",
+   "links": "[\n    {\n        \"description\": \"Frappe Apps\",\n        \"label\": \"App\",\n        \"name\": \"App\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Bench Sites\",\n        \"label\": \"Site\",\n        \"name\": \"Site\",\n        \"type\": \"doctype\"\n    }\n]"
+  },
+  {
+   "hidden": 0,
+   "label": "Bench Management",
+   "links": "[\n    {\n        \"description\": \"Site Backup\",\n        \"label\": \"Site Backup\",\n        \"name\": \"Site Backup\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Bench Manager Command\",\n        \"label\": \"Bench Manager Command\",\n        \"name\": \"Bench Manager Command\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Bench Settings\",\n        \"label\": \"Bench Settings\",\n        \"name\": \"Bench Settings\",\n        \"type\": \"doctype\"\n    }\n]"
+  },
+  {
+   "hidden": 0,
+   "label": "Cloud Infrastructure",
+   "links": "[\n    {\n        \"description\": \"Cloud Provider Configuration\",\n        \"label\": \"Cloud Provider\",\n        \"name\": \"Cloud Provider\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Virtual Machine Management\",\n        \"label\": \"Virtual Machine\",\n        \"name\": \"Virtual Machine\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Application Server Management\",\n        \"label\": \"Application Server\",\n        \"name\": \"Application Server\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Database Server Management\",\n        \"label\": \"Database Server\",\n        \"name\": \"Database Server\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Proxy Server Management\",\n        \"label\": \"Proxy Server\",\n        \"name\": \"Proxy Server\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Cloud Settings\",\n        \"label\": \"Cloud Settings\",\n        \"name\": \"Cloud Settings\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Cloud Bench Management\",\n        \"label\": \"Cloud Bench\",\n        \"name\": \"Cloud Bench\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"SSL Certificate Management\",\n        \"label\": \"SSL Certificate\",\n        \"name\": \"SSL Certificate\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Load Balancing Configuration\",\n        \"label\": \"Load Balancing\",\n        \"name\": \"Load Balancing\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Agent Job Tracking\",\n        \"label\": \"Agent Job\",\n        \"name\": \"Agent Job\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Docker Build Management\",\n        \"label\": \"Docker Build\",\n        \"name\": \"Docker Build\",\n        \"type\": \"doctype\"\n    },\n    {\n        \"description\": \"Bench Queue System\",\n        \"label\": \"Bench Queue\",\n        \"name\": \"Bench Queue\",\n        \"type\": \"doctype\"\n    }\n]"
+  }
+ ],
+ "category": "Modules",
+ "charts": [],
+ "creation": "2020-11-09 16:11:39.761670",
+ "developer_mode_only": 0,
+ "disable_user_customization": 0,
+ "docstatus": 0,
+ "doctype": "Desk Page",
+ "extends_another_page": 0,
+ "hide_custom": 0,
+ "idx": 0,
+ "is_standard": 1,
+ "label": "Bench Manager",
+ "modified": "2020-11-09 16:12:55.805480",
+ "modified_by": "Administrator",
+ "module": "Bench Manager",
+ "name": "Bench Manager",
+ "owner": "Administrator",
+ "pin_to_bottom": 0,
+ "pin_to_top": 1,
+ "shortcuts": []
+}

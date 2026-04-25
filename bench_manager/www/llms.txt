@@ -1,0 +1,51 @@
+# Worf - Frappe Solutions Company
+
+Worf is a Frappe and ERPNext solutions company based in India. We offer comprehensive Frappe app development, ERPNext implementation, cloud hosting, DevOps services, security, and migrations. We have completed 100+ successful implementations across manufacturing, healthcare, pharma, and services industries.
+
+## Services
+- Frappe App Development: Custom application development using the Frappe framework
+- ERPNext Implementation: End-to-end ERPNext setup, configuration, and deployment
+- Cloud Hosting: Managed cloud hosting for Frappe and ERPNext applications
+- DevOps Services: CI/CD pipelines, infrastructure automation, and deployment strategies
+- Security & Compliance: Security audits, penetration testing, and compliance implementation
+- Data Migration: Seamless migration from legacy systems to Frappe/ERPNext
+- Integrations: Third-party integrations with payment gateways, CRMs, and business tools
+
+## Key Pages
+- / - Homepage: Overview of Worf's Frappe and ERPNext services
+- /about - Company overview, team, and mission
+- /apps - Browse Frappe applications in our marketplace
+- /store - App store for Frappe applications
+- /contact - Get in touch for consultations and quotes
+- /developer - Developer portal for app developers
+- /community - Join the Frappe community discussions
+
+## Contact Information
+- Email: ping@worf.cloud
+- Phone: +91 98994 94479
+- Website: https://worf.cloud
+
+## Target Audience
+- Small to medium businesses looking for ERP solutions
+- Enterprises seeking Frappe and ERPNext implementation
+- Developers building applications on the Frappe framework
+- Companies requiring custom Frappe app development
+- Organizations needing ERPNext hosting and DevOps support
+
+## Industries Served
+- Manufacturing
+- Healthcare
+- Pharmaceuticals
+- Education
+- E-commerce
+- Services
+- Retail
+- Logistics
+
+## Technology Stack
+- Framework: Frappe (Python-based full-stack framework)
+- ERP: ERPNext (open-source ERP built on Frappe)
+- Hosting: Cloud infrastructure with DevOps automation
+- Database: MariaDB/PostgreSQL
+- Frontend: Vue.js, JavaScript
+- Backend: Python, Frappe Framework

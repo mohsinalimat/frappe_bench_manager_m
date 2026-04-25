@@ -1,0 +1,380 @@
+{
+ "actions": [],
+ "allow_guest_to_view": 1,
+ "autoname": "field:app_name",
+ "creation": "2017-08-03 18:38:10.895126",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "app_name",
+  "app_title",
+  "version",
+  "app_description",
+  "app_publisher",
+  "app_email",
+  "app_icon",
+  "app_color",
+  "app_license",
+  "developer_flag",
+  "column_break_11",
+  "current_git_branch",
+  "is_git_repo",
+  "bench_settings",
+  "section_break_marketplace",
+  "is_published",
+  "is_featured",
+  "category",
+  "pricing_model",
+  "price",
+  "subscription_price",
+  "subscription_annual_price",
+  "currency",
+  "subscription_duration_days",
+  "license_type",
+  "license_duration_days",
+  "short_description",
+  "long_description",
+  "app_logo",
+  "demo_url",
+  "documentation_url",
+  "github_url",
+  "total_downloads",
+  "rating",
+  "review_count",
+  "developer",
+  "moderation_status",
+  "rejection_reason",
+  "section_break_screenshots",
+  "screenshots",
+  "section_break_tags",
+  "tags",
+  "section_break_compatibility",
+  "compatibility",
+  "section_break_dependencies",
+  "dependencies"
+ ],
+ "fields": [
+  {
+   "fieldname": "app_name",
+   "fieldtype": "Data",
+   "label": "App Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "app_title",
+   "fieldtype": "Data",
+   "label": "App Title"
+  },
+  {
+   "depends_on": "eval:doc.version != undefined",
+   "fieldname": "version",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Version",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "app_description",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "App Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "app_publisher",
+   "fieldtype": "Data",
+   "label": "App Publisher",
+   "reqd": 1
+  },
+  {
+   "fieldname": "app_email",
+   "fieldtype": "Data",
+   "label": "App Email",
+   "reqd": 1
+  },
+  {
+   "default": "fa fa-gamepad",
+   "fieldname": "app_icon",
+   "fieldtype": "Data",
+   "label": "App Icon"
+  },
+  {
+   "default": "'grey'",
+   "fieldname": "app_color",
+   "fieldtype": "Data",
+   "label": "App Color"
+  },
+  {
+   "default": "MIT",
+   "fieldname": "app_license",
+   "fieldtype": "Data",
+   "label": "App License"
+  },
+  {
+   "default": "0",
+   "fieldname": "developer_flag",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Developer Flag",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_git_branch",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Current Git Branch",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_git_repo",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Git Repo",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bench_settings",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Bench Settings",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_marketplace",
+   "fieldtype": "Section Break",
+   "label": "Marketplace Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_published",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Published"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_featured",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Featured"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Category",
+   "options": "App Category"
+  },
+  {
+   "default": "One-time",
+   "fieldname": "pricing_model",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Pricing Model",
+   "options": "One-time\nSubscription\nBoth"
+  },
+  {
+   "depends_on": "eval:doc.pricing_model != 'Subscription'",
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "One-time Price"
+  },
+  {
+   "depends_on": "eval:doc.pricing_model != 'One-time'",
+   "fieldname": "subscription_price",
+   "fieldtype": "Currency",
+   "label": "Monthly Subscription Price"
+  },
+  {
+   "depends_on": "eval:doc.pricing_model != 'One-time'",
+   "fieldname": "subscription_annual_price",
+   "fieldtype": "Currency",
+   "label": "Annual Subscription Price"
+  },
+  {
+   "default": "INR",
+   "fieldname": "currency",
+   "fieldtype": "Select",
+   "label": "Currency",
+   "options": "INR\nUSD\nEUR\nGBP\nAUD\nCAD\nJPY\nSGD\nAED\nCNY"
+  },
+  {
+   "default": "30",
+   "fieldname": "subscription_duration_days",
+   "fieldtype": "Int",
+   "label": "Subscription Duration (Days)"
+  },
+  {
+   "default": "Perpetual",
+   "fieldname": "license_type",
+   "fieldtype": "Select",
+   "label": "License Type",
+   "options": "Perpetual\nTime-limited"
+  },
+  {
+   "depends_on": "eval:doc.license_type == 'Time-limited'",
+   "fieldname": "license_duration_days",
+   "fieldtype": "Int",
+   "label": "License Duration (Days)"
+  },
+  {
+   "fieldname": "short_description",
+   "fieldtype": "Small Text",
+   "label": "Short Description"
+  },
+  {
+   "fieldname": "long_description",
+   "fieldtype": "Markdown Editor",
+   "label": "Long Description"
+  },
+  {
+   "fieldname": "app_logo",
+   "fieldtype": "Attach Image",
+   "label": "App Logo"
+  },
+  {
+   "fieldname": "demo_url",
+   "fieldtype": "Data",
+   "label": "Demo URL"
+  },
+  {
+   "fieldname": "documentation_url",
+   "fieldtype": "Data",
+   "label": "Documentation URL"
+  },
+  {
+   "fieldname": "github_url",
+   "fieldtype": "Data",
+   "label": "GitHub URL"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_downloads",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Downloads",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "rating",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Rating",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "review_count",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Review Count",
+   "read_only": 1
+  },
+  {
+   "fieldname": "developer",
+   "fieldtype": "Link",
+   "label": "Developer",
+   "options": "App Developer"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "moderation_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Moderation Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "depends_on": "eval:doc.moderation_status == 'Rejected'",
+   "fieldname": "rejection_reason",
+   "fieldtype": "Text",
+   "label": "Rejection Reason"
+  },
+  {
+   "fieldname": "section_break_screenshots",
+   "fieldtype": "Section Break",
+   "label": "Screenshots"
+  },
+  {
+   "fieldname": "screenshots",
+   "fieldtype": "Table",
+   "label": "Screenshots",
+   "options": "App Screenshot"
+  },
+  {
+   "fieldname": "section_break_tags",
+   "fieldtype": "Section Break",
+   "label": "Tags"
+  },
+  {
+   "fieldname": "tags",
+   "fieldtype": "Table",
+   "label": "Tags",
+   "options": "App Tag"
+  },
+  {
+   "fieldname": "section_break_compatibility",
+   "fieldtype": "Section Break",
+   "label": "Compatibility"
+  },
+  {
+   "fieldname": "compatibility",
+   "fieldtype": "Table",
+   "label": "Frappe Version Compatibility",
+   "options": "Frappe Version"
+  },
+  {
+   "fieldname": "section_break_dependencies",
+   "fieldtype": "Section Break",
+   "label": "Dependencies"
+  },
+  {
+   "fieldname": "dependencies",
+   "fieldtype": "Table",
+   "label": "App Dependencies",
+   "options": "App Dependency"
+  }
+ ],
+ "in_create": 1,
+ "links": [],
+ "modified": "2026-04-23 21:28:21.184070",
+ "modified_by": "Administrator",
+ "module": "Bench Manager",
+ "name": "App",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Guest"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

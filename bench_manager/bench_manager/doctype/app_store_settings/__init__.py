@@ -1,0 +1,1 @@
+from .app_store_settings import AppStoreSettings

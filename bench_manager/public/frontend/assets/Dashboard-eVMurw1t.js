@@ -1,0 +1,2 @@
+import{h as s,j as e,f as o}from"./vue-vendor-BNGP8MTa.js";const t={class:"min-h-screen bg-gray-50 py-8"},x={__name:"Dashboard",setup(r){return(l,a)=>(o(),s("div",t,[...a[0]||(a[0]=[e("div",{class:"w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16"},[e("div",{class:"max-w-[1600px] mx-auto"},[e("h1",{class:"text-2xl font-bold text-gray-900 mb-6"},"Developer Dashboard"),e("p",{class:"text-gray-600"},"Developer Dashboard page - Coming Soon")])],-1)])]))}};export{x as default};
+//# sourceMappingURL=Dashboard-eVMurw1t.js.map

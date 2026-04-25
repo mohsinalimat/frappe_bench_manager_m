@@ -1,0 +1,2 @@
+import{h as e,j as t,f as r}from"./vue-vendor-BNGP8MTa.js";const d={__name:"Dashboard",setup(o){return(s,a)=>(r(),e("div",null,[...a[0]||(a[0]=[t("h1",{class:"text-2xl font-bold text-gray-900 dark:text-white mb-6"},"Admin Dashboard",-1),t("p",{class:"text-gray-600 dark:text-gray-400"},"Admin Dashboard page - Coming Soon",-1)])]))}};export{d as default};
+//# sourceMappingURL=Dashboard-BA3qJM_k.js.map
