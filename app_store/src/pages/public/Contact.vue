@@ -93,7 +93,7 @@
                   </div>
                   <div>
                     <h3 class="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-fuchsia-600 dark:group-hover:text-fuchsia-400 transition-colors">Phone</h3>
-                    <p class="text-gray-600 dark:text-gray-400">+91 9560859178</p>
+                    <p class="text-gray-600 dark:text-gray-400">+91 120 492 7985</p>
                   </div>
                 </div>
                 <div class="flex items-start gap-4 group">

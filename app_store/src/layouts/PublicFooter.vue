@@ -49,8 +49,6 @@
           <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
             <li><router-link to="/about" class="hover:text-gray-900 dark:hover:text-white transition-colors">About Us</router-link></li>
             <li><router-link to="/contact" class="hover:text-gray-900 dark:hover:text-white transition-colors">Contact</router-link></li>
-            <li><a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors">Documentation</a></li>
-            <li><a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors">API Reference</a></li>
           </ul>
         </div>
 
@@ -68,7 +66,7 @@
       </div>
 
       <div class="border-t border-gray-200 dark:border-gray-800 mt-8 pt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-        <p>&copy; {{ currentYear }} {{ websiteSettings.data?.app_name || 'Frappe App Store' }}. All rights reserved.</p>
+        <p>&copy; {{ currentYear }} Worf Internet Services Private Limited. All rights reserved.</p>
       </div>
       </div>
     </div>

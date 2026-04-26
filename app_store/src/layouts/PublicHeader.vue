@@ -13,7 +13,7 @@
           <div class="flex items-center space-x-4">
             <div class="flex items-center space-x-2 text-gray-300">
               <FeatherIcon name="phone" class="w-4 h-4" />
-              <span>+91 98994 94479</span>
+              <span>+91 120 492 7985</span>
             </div>
             <div class="flex items-center space-x-2 text-gray-300">
               <FeatherIcon name="mail" class="w-4 h-4" />
@@ -132,10 +132,10 @@
 
         <!-- Contact info on mobile -->
         <div class="pt-4 border-t border-gray-200 dark:border-gray-800 space-y-3">
-          <a href="tel:+919899494479" class="block py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg px-3">
+          <a href="tel:+911204927985" class="block py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg px-3">
             <div class="flex items-center space-x-3">
               <FeatherIcon name="phone" class="w-5 h-5 text-green-600" />
-              <span class="font-medium">+91 98994 94479</span>
+              <span class="font-medium">+91 120 492 7985</span>
             </div>
           </a>
           <a href="mailto:ping@worf.cloud" class="block py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg px-3">
