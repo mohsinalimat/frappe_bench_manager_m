@@ -204,9 +204,10 @@
    "label": "Enable GitHub Sync"
   },
   {
+   "description": "Optional: Override the GitHub token from Bench Settings for this app only",
    "fieldname": "github_token",
    "fieldtype": "Password",
-   "label": "GitHub Token (Optional)"
+   "label": "GitHub Token (Override)"
   },
   {
    "fieldname": "section_break_sync_status",

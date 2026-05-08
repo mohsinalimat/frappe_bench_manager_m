@@ -420,7 +420,11 @@ class App(Document):
 				user=frappe.session.user
 			)
 			
-			github = GitHubAPI(self.repository_url, self.github_token)
+			# Get GitHub token from Bench Settings (centralized)
+			bench_settings = frappe.get_single('Bench Settings')
+			github_token = bench_settings.get('github_password') or self.github_token or None
+			
+			github = GitHubAPI(self.repository_url, github_token)
 			
 			# Clear existing versions
 			self.versions = []
@@ -543,7 +547,11 @@ class App(Document):
 				user=frappe.session.user
 			)
 			
-			github = GitHubAPI(self.repository_url, self.github_token)
+			# Get GitHub token from Bench Settings (centralized)
+			bench_settings = frappe.get_single('Bench Settings')
+			github_token = bench_settings.get('github_password') or self.github_token or None
+			
+			github = GitHubAPI(self.repository_url, github_token)
 			
 			# Clear existing branches
 			self.branches = []
