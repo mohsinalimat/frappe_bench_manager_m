@@ -1,0 +1,123 @@
+{
+ "actions": [],
+ "creation": "2026-05-08 20:17:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "version",
+  "git_tag",
+  "git_hash",
+  "column_break_4",
+  "release_date",
+  "author",
+  "section_break_7",
+  "is_current",
+  "is_latest",
+  "is_prerelease",
+  "section_break_11",
+  "release_notes",
+  "compatibility_section",
+  "frappe_version_required",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "version",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Version",
+   "reqd": 1
+  },
+  {
+   "fieldname": "git_tag",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Git Tag"
+  },
+  {
+   "fieldname": "git_hash",
+   "fieldtype": "Data",
+   "label": "Git Commit Hash",
+   "length": 40
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "release_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Release Date"
+  },
+  {
+   "fieldname": "author",
+   "fieldtype": "Data",
+   "label": "Author"
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_current",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Current Version"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_latest",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Latest Version"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_prerelease",
+   "fieldtype": "Check",
+   "label": "Is Pre-release"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "release_notes",
+   "fieldtype": "Text Editor",
+   "label": "Release Notes"
+  },
+  {
+   "fieldname": "compatibility_section",
+   "fieldtype": "Section Break",
+   "label": "Compatibility"
+  },
+  {
+   "fieldname": "frappe_version_required",
+   "fieldtype": "Data",
+   "label": "Frappe Version Required"
+  },
+  {
+   "default": "Available",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Available\nInstalled\nDeprecated\nYanked"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-05-08 20:17:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bench Manager",
+ "name": "App Version",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "release_date",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

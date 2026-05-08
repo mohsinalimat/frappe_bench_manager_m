@@ -21,6 +21,22 @@
   "current_git_branch",
   "is_git_repo",
   "bench_settings",
+  "section_break_version_management",
+  "current_version",
+  "latest_version",
+  "update_available",
+  "column_break_version",
+  "repository_url",
+  "enable_github_sync",
+  "github_token",
+  "section_break_sync_status",
+  "last_synced",
+  "sync_status",
+  "sync_error",
+  "section_break_version_history",
+  "versions",
+  "section_break_branches",
+  "branches",
   "section_break_marketplace",
   "is_published",
   "is_featured",
@@ -147,6 +163,99 @@
    "hidden": 1,
    "label": "Bench Settings",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_version_management",
+   "fieldtype": "Section Break",
+   "label": "Version Management"
+  },
+  {
+   "fieldname": "current_version",
+   "fieldtype": "Data",
+   "label": "Current Version",
+   "read_only": 1
+  },
+  {
+   "fieldname": "latest_version",
+   "fieldtype": "Data",
+   "label": "Latest Version",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "update_available",
+   "fieldtype": "Check",
+   "label": "Update Available",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_version",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "repository_url",
+   "fieldtype": "Data",
+   "label": "Repository URL"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_github_sync",
+   "fieldtype": "Check",
+   "label": "Enable GitHub Sync"
+  },
+  {
+   "fieldname": "github_token",
+   "fieldtype": "Password",
+   "label": "GitHub Token (Optional)"
+  },
+  {
+   "fieldname": "section_break_sync_status",
+   "fieldtype": "Section Break",
+   "label": "Sync Status"
+  },
+  {
+   "fieldname": "last_synced",
+   "fieldtype": "Datetime",
+   "label": "Last Synced",
+   "read_only": 1
+  },
+  {
+   "default": "Never Synced",
+   "fieldname": "sync_status",
+   "fieldtype": "Select",
+   "label": "Sync Status",
+   "options": "Never Synced\nSuccess\nFailed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sync_error",
+   "fieldtype": "Text",
+   "label": "Sync Error",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_break_version_history",
+   "fieldtype": "Section Break",
+   "label": "Version History"
+  },
+  {
+   "fieldname": "versions",
+   "fieldtype": "Table",
+   "label": "Available Versions",
+   "options": "App Version"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_break_branches",
+   "fieldtype": "Section Break",
+   "label": "Branches"
+  },
+  {
+   "fieldname": "branches",
+   "fieldtype": "Table",
+   "label": "Git Branches",
+   "options": "App Branch"
   },
   {
    "fieldname": "section_break_marketplace",

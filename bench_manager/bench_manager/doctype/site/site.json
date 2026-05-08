@@ -30,6 +30,9 @@
   "column_break_cryn",
   "column_break_12",
   "developer_mode",
+  "maintenance_mode",
+  "pause_scheduler",
+  "ignore_csrf",
   "disable_website_cache",
   "limits",
   "expiry",
@@ -126,12 +129,6 @@
    "label": "Check Status Now"
   },
   {
-   "default": "0",
-   "fieldname": "developer_mode",
-   "fieldtype": "Check",
-   "label": "Developer Mode"
-  },
-  {
    "depends_on": "eval:!(doc.__islocal)",
    "fieldname": "section_break_6",
    "fieldtype": "Section Break",
@@ -163,6 +160,30 @@
   {
    "fieldname": "column_break_12",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "developer_mode",
+   "fieldtype": "Check",
+   "label": "Developer Mode"
+  },
+  {
+   "default": "0",
+   "fieldname": "maintenance_mode",
+   "fieldtype": "Check",
+   "label": "Maintenance Mode"
+  },
+  {
+   "default": "0",
+   "fieldname": "pause_scheduler",
+   "fieldtype": "Check",
+   "label": "Pause Scheduler"
+  },
+  {
+   "default": "0",
+   "fieldname": "ignore_csrf",
+   "fieldtype": "Check",
+   "label": "Ignore CSRF"
   },
   {
    "default": "0",

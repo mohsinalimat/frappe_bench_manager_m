@@ -1,0 +1,76 @@
+{
+ "actions": [],
+ "creation": "2026-05-08 20:17:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "branch_name",
+  "is_active",
+  "column_break_3",
+  "last_commit_hash",
+  "last_commit_date",
+  "section_break_6",
+  "last_commit_message",
+  "frappe_version"
+ ],
+ "fields": [
+  {
+   "fieldname": "branch_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Branch Name",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Active"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_commit_hash",
+   "fieldtype": "Data",
+   "label": "Last Commit Hash",
+   "length": 40
+  },
+  {
+   "fieldname": "last_commit_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Last Commit Date"
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "last_commit_message",
+   "fieldtype": "Small Text",
+   "label": "Last Commit Message"
+  },
+  {
+   "fieldname": "frappe_version",
+   "fieldtype": "Data",
+   "label": "Frappe Version"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-05-08 20:17:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bench Manager",
+ "name": "App Branch",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

@@ -22,10 +22,12 @@ class Site(Document):
 	site_config_fields = [
 		"maintenance_mode",
 		"pause_scheduler",
+		"ignore_csrf",
 		"db_name",
 		"db_password",
 		"developer_mode",
-		"disable_website_cache" "limits",
+		"disable_website_cache",
+		"limits",
 	]
 	limits_fields = ["emails", "expiry", "space", "space_usage"]
 	space_usage_fields = ["backup_size", "database_size", "files_size", "total"]
@@ -114,6 +116,7 @@ class Site(Document):
 				"developer_mode": "boolean",  # Check field (0/1)
 				"maintenance_mode": "boolean",  # Check field (0/1)
 				"pause_scheduler": "boolean",   # Check field (0/1)
+				"ignore_csrf": "boolean",      # Check field (0/1)
 				"disable_website_cache": "boolean"  # Check field (0/1)
 			}
 			
@@ -164,7 +167,7 @@ class Site(Document):
 					value = site_config_data[site_config_field]
 					
 					# Handle different field types
-					if site_config_field in ["developer_mode", "maintenance_mode", "pause_scheduler", "disable_website_cache"]:
+					if site_config_field in ["developer_mode", "maintenance_mode", "pause_scheduler", "ignore_csrf", "disable_website_cache"]:
 						# Boolean fields: ensure 0 or 1
 						self.set_attr(site_config_field, 1 if value else 0)
 					else:
@@ -335,8 +338,9 @@ class Site(Document):
 				)
 			],
 			"install_ssl": [
+				"mkdir -p /home/ubuntu/frappe-bench/sites/.well-known/acme-challenge",
 				f"sudo certbot certonly --non-interactive --agree-tos --webroot -w /home/ubuntu/frappe-bench/sites --domains {self.site_name} --cert-name {self.site_name}",
-				f"python3 -c \"import json; import os; ssl_cert = '/etc/letsencrypt/live/{self.site_name}/fullchain.pem'; site_config_path = 'sites/{self.site_name}/site_config.json'; config = json.load(open(site_config_path)) if os.path.exists(site_config_path) else {{}}; config['ssl_certificate'] = ssl_cert if os.path.exists(ssl_cert) else config.pop('ssl_certificate', None); config['ssl_certificate_key'] = ssl_cert.replace('fullchain.pem', 'privkey.pem') if os.path.exists(ssl_cert) else config.pop('ssl_certificate_key', None); json.dump(config, open(site_config_path, 'w'), indent=4)\"",
+				f"sudo python3 -c \"import json; import os; ssl_cert = '/etc/letsencrypt/live/{self.site_name}/fullchain.pem'; ssl_key = '/etc/letsencrypt/live/{self.site_name}/privkey.pem'; site_config_path = 'sites/{self.site_name}/site_config.json'; config = json.load(open(site_config_path, 'r')) if os.path.exists(site_config_path) else {{}}; config['ssl_certificate'] = ssl_cert if os.path.exists(ssl_cert) else config.get('ssl_certificate'); config['ssl_certificate_key'] = ssl_key if os.path.exists(ssl_key) else config.get('ssl_certificate_key'); f = open(site_config_path, 'w'); json.dump(config, f, indent=4); f.close()\"",
 				"bench setup nginx --yes",
 				"sudo systemctl reload nginx"
 			],

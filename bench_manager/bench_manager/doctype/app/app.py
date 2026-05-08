@@ -7,13 +7,22 @@ import re
 import shlex
 import time
 from subprocess import PIPE, STDOUT, Popen, check_output
+from datetime import datetime
 
 import frappe
 from bench_manager.bench_manager.utils import (
 	safe_decode,
 	verify_whitelisted_call,
 )
+from bench_manager.bench_manager.utils.github_api import GitHubAPI
+from bench_manager.bench_manager.utils.version_utils import (
+	extract_version_from_tag,
+	get_latest_version,
+	is_prerelease,
+	compare_versions
+)
 from frappe.model.document import Document
+from frappe.utils import now_datetime
 
 
 class App(Document):
@@ -327,6 +336,13 @@ class App(Document):
 			"push": git_push_setup + ["git push"],
 			"stash": ["git add .", "git stash"],
 			"apply-stash": ["git stash apply"],
+			"update_app": [
+				f"git checkout {self.current_git_branch} || git checkout -b {self.current_git_branch}",
+				"git pull",
+				"bench --site all clear-cache",
+				"bench --site all clear-website-cache",
+				"bench restart"
+			],
 			"remove_app": [f"bench remove-app {self.name}" + (" --force" if force else "")],
 		}
 		frappe.enqueue(
@@ -337,6 +353,258 @@ class App(Document):
 			key=key,
 			docname=self.name,
 			env_vars=env_vars if env_vars else None,
+		)
+
+	# ===== VERSION MANAGEMENT METHODS =====
+	
+	def detect_current_version(self):
+		"""Detect the currently installed version from git"""
+		if not self.is_git_repo:
+			return None
+		
+		app_path = os.path.join("..", "apps", self.name)
+		
+		try:
+			# Try to get current git tag
+			tag = safe_decode(
+				check_output(
+					"git describe --tags --exact-match".split(),
+					cwd=app_path,
+					stderr=PIPE
+				)
+			).strip()
+			if tag:
+				return extract_version_from_tag(tag)
+		except:
+			pass
+		
+		# If no exact tag, try to get version from hooks.py or __init__.py
+		try:
+			# Read version from app's __init__.py
+			init_file = os.path.join(app_path, self.name, "__init__.py")
+			if os.path.exists(init_file):
+				with open(init_file, 'r') as f:
+					content = f.read()
+					match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', content)
+					if match:
+						return match.group(1)
+		except:
+			pass
+		
+		# Fallback to the version field
+		return self.version
+	
+	@frappe.whitelist()
+	def sync_versions_from_github(self):
+		"""Fetch releases and tags from GitHub and update versions table"""
+		if not self.repository_url:
+			frappe.throw("Repository URL is required for GitHub sync")
+		
+		try:
+			github = GitHubAPI(self.repository_url, self.github_token)
+			
+			# Clear existing versions
+			self.versions = []
+			
+			# Get releases from GitHub
+			releases = github.get_releases()
+			release_dict = {r['tag_name']: r for r in releases}
+			
+			# Get all tags
+			tags = github.get_tags()
+			
+			# Process each tag
+			for tag in tags:
+				tag_name = tag['name']
+				version_number = extract_version_from_tag(tag_name)
+				
+				# Get release info if available
+				release_info = release_dict.get(tag_name)
+				
+				# Get commit info
+				commit_sha = tag['commit']['sha']
+				commit_info = github.get_commit_info(commit_sha)
+				
+				version_row = {
+					'version': version_number,
+					'git_tag': tag_name,
+					'git_hash': commit_sha,
+					'is_prerelease': is_prerelease(tag_name),
+					'status': 'Available'
+				}
+				
+				if release_info:
+					version_row['release_notes'] = release_info.get('body', '')
+					version_row['author'] = release_info.get('author', {}).get('login', '')
+					version_row['release_date'] = release_info.get('published_at')
+				elif commit_info:
+					version_row['author'] = commit_info.get('commit', {}).get('author', {}).get('name', '')
+					version_row['release_date'] = commit_info.get('commit', {}).get('author', {}).get('date')
+				
+				self.append('versions', version_row)
+			
+			# Mark current and latest versions
+			self.update_version_flags()
+			
+			# Update sync status
+			self.last_synced = now_datetime()
+			self.sync_status = 'Success'
+			self.sync_error = None
+			
+			self.save()
+			frappe.msgprint(f"Successfully synced {len(self.versions)} versions from GitHub")
+			
+		except Exception as e:
+			self.sync_status = 'Failed'
+			self.sync_error = str(e)
+			self.save()
+			frappe.throw(f"Failed to sync versions: {str(e)}")
+	
+	@frappe.whitelist()
+	def sync_branches_from_github(self):
+		"""Fetch branches from GitHub and update branches table"""
+		if not self.repository_url:
+			frappe.throw("Repository URL is required for GitHub sync")
+		
+		try:
+			github = GitHubAPI(self.repository_url, self.github_token)
+			
+			# Clear existing branches
+			self.branches = []
+			
+			# Get branches from GitHub
+			branches = github.get_branches()
+			
+			for branch in branches:
+				branch_name = branch['name']
+				commit = branch['commit']
+				
+				# Get commit details
+				commit_info = github.get_commit_info(commit['sha'])
+				
+				branch_row = {
+					'branch_name': branch_name,
+					'last_commit_hash': commit['sha'],
+					'is_active': branch_name == self.current_git_branch
+				}
+				
+				if commit_info:
+					branch_row['last_commit_message'] = commit_info.get('commit', {}).get('message', '')
+					branch_row['last_commit_date'] = commit_info.get('commit', {}).get('author', {}).get('date')
+				
+				self.append('branches', branch_row)
+			
+			self.save()
+			frappe.msgprint(f"Successfully synced {len(self.branches)} branches from GitHub")
+			
+		except Exception as e:
+			frappe.throw(f"Failed to sync branches: {str(e)}")
+	
+	def update_version_flags(self):
+		"""Update is_current and is_latest flags for versions"""
+		if not self.versions:
+			return
+		
+		# Detect current version
+		current_ver = self.detect_current_version()
+		self.current_version = current_ver
+		
+		# Get all version numbers (excluding pre-releases for latest)
+		stable_versions = [v.version for v in self.versions if not v.is_prerelease]
+		all_versions = [v.version for v in self.versions]
+		
+		# Find latest stable version
+		latest_ver = get_latest_version(stable_versions) if stable_versions else get_latest_version(all_versions)
+		self.latest_version = latest_ver
+		
+		# Set update_available flag
+		if current_ver and latest_ver:
+			self.update_available = compare_versions(latest_ver, current_ver) > 0
+		
+		# Mark versions
+		for version_row in self.versions:
+			version_row.is_current = (version_row.version == current_ver)
+			version_row.is_latest = (version_row.version == latest_ver)
+			if version_row.is_current:
+				version_row.status = 'Installed'
+	
+	@frappe.whitelist()
+	def update_to_version(self, key, target_version, target_tag):
+		"""Update app to a specific version/tag"""
+		commands = [
+			"git fetch --all --tags",
+			f"git checkout tags/{target_tag}",
+			"bench --site all clear-cache",
+			"bench --site all clear-website-cache",
+			"bench restart"
+		]
+		frappe.enqueue(
+			"bench_manager.bench_manager.utils.run_command",
+			commands=commands,
+			cwd=os.path.join("..", "apps", self.name),
+			doctype=self.doctype,
+			key=key,
+			docname=self.name,
+		)
+	
+	@frappe.whitelist()
+	def switch_branch_and_update(self, key, branch_name, target_version=None):
+		"""Switch to a different branch and optionally a specific version"""
+		commands = [
+			f"git fetch origin {branch_name}",
+			f"git checkout {branch_name}",
+			f"git pull origin {branch_name}"
+		]
+		
+		if target_version:
+			commands.append(f"git checkout tags/{target_version}")
+		
+		commands.extend([
+			"bench --site all clear-cache",
+			"bench --site all clear-website-cache",
+			"bench restart"
+		])
+		
+		frappe.enqueue(
+			"bench_manager.bench_manager.utils.run_command",
+			commands=commands,
+			cwd=os.path.join("..", "apps", self.name),
+			doctype=self.doctype,
+			key=key,
+			docname=self.name,
+		)
+	
+	@frappe.whitelist()
+	def rollback_to_version(self, key, version_hash):
+		"""Rollback to a previous version using commit hash"""
+		commands = [
+			f"git checkout {version_hash}",
+			"bench --site all clear-cache",
+			"bench --site all clear-website-cache",
+			"bench restart"
+		]
+		frappe.enqueue(
+			"bench_manager.bench_manager.utils.run_command",
+			commands=commands,
+			cwd=os.path.join("..", "apps", self.name),
+			doctype=self.doctype,
+			key=key,
+			docname=self.name,
+		)
+	
+	@frappe.whitelist()
+	def install_to_site(self, key, site_name):
+		commands = [
+			f"bench --site {site_name} install-app {self.name}",
+			f"bench --site {site_name} migrate",
+			"bench restart"
+		]
+		frappe.enqueue(
+			"bench_manager.bench_manager.utils.run_command",
+			commands=commands,
+			doctype=self.doctype,
+			key=key,
+			docname=self.name,
 		)
 
 
