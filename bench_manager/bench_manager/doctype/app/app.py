@@ -459,9 +459,8 @@ class App(Document):
 				# Get release info if available
 				release_info = release_dict.get(tag_name)
 				
-				# Get commit info
+				# Get commit info from tag object (no extra API call needed)
 				commit_sha = tag['commit']['sha']
-				commit_info = github.get_commit_info(commit_sha)
 				
 				version_row = {
 					'version': version_number,
@@ -472,16 +471,13 @@ class App(Document):
 				}
 				
 				if release_info:
+					# Use release info (already fetched)
 					version_row['release_notes'] = release_info.get('body', '')
 					version_row['author'] = release_info.get('author', {}).get('login', '')
 					published_at = release_info.get('published_at')
 					if published_at:
 						version_row['release_date'] = self.parse_github_datetime(published_at)
-				elif commit_info:
-					version_row['author'] = commit_info.get('commit', {}).get('author', {}).get('name', '')
-					commit_date = commit_info.get('commit', {}).get('author', {}).get('date')
-					if commit_date:
-						version_row['release_date'] = self.parse_github_datetime(commit_date)
+				# Don't fetch individual commit info - too many API calls!
 				
 				self.append('versions', version_row)
 				
@@ -572,20 +568,20 @@ class App(Document):
 				branch_name = branch['name']
 				commit = branch['commit']
 				
-				# Get commit details
-				commit_info = github.get_commit_info(commit['sha'])
-				
 				branch_row = {
 					'branch_name': branch_name,
 					'last_commit_hash': commit['sha'],
 					'is_active': branch_name == self.current_git_branch
 				}
 				
-				if commit_info:
-					branch_row['last_commit_message'] = commit_info.get('commit', {}).get('message', '')
-					commit_date = commit_info.get('commit', {}).get('author', {}).get('date')
-					if commit_date:
-						branch_row['last_commit_date'] = self.parse_github_datetime(commit_date)
+				# Only fetch detailed commit info for important branches (first 10) to save API calls
+				if idx < 10:
+					commit_info = github.get_commit_info(commit['sha'])
+					if commit_info:
+						branch_row['last_commit_message'] = commit_info.get('commit', {}).get('message', '')
+						commit_date = commit_info.get('commit', {}).get('author', {}).get('date')
+						if commit_date:
+							branch_row['last_commit_date'] = self.parse_github_datetime(commit_date)
 				
 				self.append('branches', branch_row)
 				

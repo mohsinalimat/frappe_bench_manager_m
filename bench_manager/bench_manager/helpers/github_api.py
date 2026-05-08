@@ -49,10 +49,21 @@ class GitHubAPI:
 		url = f"{self.base_url}/repos/{self.owner}/{self.repo}/releases"
 		try:
 			response = requests.get(url, headers=self.get_headers(), timeout=30)
+			
+			# Check rate limit
+			if response.status_code == 403 and 'rate limit exceeded' in response.text.lower():
+				rate_limit = self.check_rate_limit()
+				if rate_limit:
+					frappe.throw(f"GitHub API rate limit exceeded. Remaining: {rate_limit['remaining']}/{rate_limit['limit']}. Please wait or add a GitHub token.")
+				else:
+					frappe.throw("GitHub API rate limit exceeded. Please add a GitHub token to increase limits.")
+			
 			response.raise_for_status()
 			return response.json()
 		except requests.exceptions.RequestException as e:
-			frappe.log_error(f"GitHub API Error: {str(e)}", "GitHub Releases Fetch")
+			error_msg = f"GitHub API Error: {str(e)}"
+			frappe.log_error(error_msg, "GitHub Releases Fetch")
+			frappe.throw(error_msg)
 			return []
 	
 	def get_tags(self):
@@ -60,10 +71,17 @@ class GitHubAPI:
 		url = f"{self.base_url}/repos/{self.owner}/{self.repo}/tags"
 		try:
 			response = requests.get(url, headers=self.get_headers(), timeout=30)
+			
+			# Check rate limit
+			if response.status_code == 403 and 'rate limit exceeded' in response.text.lower():
+				frappe.throw("GitHub API rate limit exceeded. Please add a GitHub token to increase limits from 60 to 5000 requests/hour.")
+			
 			response.raise_for_status()
 			return response.json()
 		except requests.exceptions.RequestException as e:
-			frappe.log_error(f"GitHub API Error: {str(e)}", "GitHub Tags Fetch")
+			error_msg = f"GitHub API Error: {str(e)}"
+			frappe.log_error(error_msg, "GitHub Tags Fetch")
+			frappe.throw(error_msg)
 			return []
 	
 	def get_branches(self):
