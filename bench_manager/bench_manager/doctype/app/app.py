@@ -14,8 +14,8 @@ from bench_manager.bench_manager.utils import (
 	safe_decode,
 	verify_whitelisted_call,
 )
-from bench_manager.bench_manager.utils.github_api import GitHubAPI
-from bench_manager.bench_manager.utils.version_utils import (
+from bench_manager.bench_manager.helpers.github_api import GitHubAPI
+from bench_manager.bench_manager.helpers.version_utils import (
 	extract_version_from_tag,
 	get_latest_version,
 	is_prerelease,
