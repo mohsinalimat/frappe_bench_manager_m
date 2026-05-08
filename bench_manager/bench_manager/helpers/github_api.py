@@ -41,7 +41,7 @@ class GitHubAPI:
 			'User-Agent': 'Frappe-Bench-Manager'
 		}
 		if self.token:
-			headers['Authorization'] = f'token {self.token}'
+			headers['Authorization'] = f'Bearer {self.token}'
 		return headers
 	
 	def get_releases(self):
