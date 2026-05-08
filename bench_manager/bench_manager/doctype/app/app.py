@@ -357,6 +357,19 @@ class App(Document):
 
 	# ===== VERSION MANAGEMENT METHODS =====
 	
+	def parse_github_datetime(self, datetime_str):
+		"""Convert GitHub ISO 8601 datetime to MySQL compatible format"""
+		if not datetime_str:
+			return None
+		try:
+			# GitHub returns format: 2026-05-06T06:34:34Z
+			# Convert to MySQL format: 2026-05-06 06:34:34
+			from datetime import datetime
+			dt = datetime.fromisoformat(datetime_str.replace('Z', '+00:00'))
+			return dt.strftime('%Y-%m-%d %H:%M:%S')
+		except:
+			return None
+	
 	def detect_current_version(self):
 		"""Detect the currently installed version from git"""
 		if not self.is_git_repo:
@@ -436,10 +449,14 @@ class App(Document):
 				if release_info:
 					version_row['release_notes'] = release_info.get('body', '')
 					version_row['author'] = release_info.get('author', {}).get('login', '')
-					version_row['release_date'] = release_info.get('published_at')
+					published_at = release_info.get('published_at')
+					if published_at:
+						version_row['release_date'] = self.parse_github_datetime(published_at)
 				elif commit_info:
 					version_row['author'] = commit_info.get('commit', {}).get('author', {}).get('name', '')
-					version_row['release_date'] = commit_info.get('commit', {}).get('author', {}).get('date')
+					commit_date = commit_info.get('commit', {}).get('author', {}).get('date')
+					if commit_date:
+						version_row['release_date'] = self.parse_github_datetime(commit_date)
 				
 				self.append('versions', version_row)
 			
@@ -490,7 +507,9 @@ class App(Document):
 				
 				if commit_info:
 					branch_row['last_commit_message'] = commit_info.get('commit', {}).get('message', '')
-					branch_row['last_commit_date'] = commit_info.get('commit', {}).get('author', {}).get('date')
+					commit_date = commit_info.get('commit', {}).get('author', {}).get('date')
+					if commit_date:
+						branch_row['last_commit_date'] = self.parse_github_datetime(commit_date)
 				
 				self.append('branches', branch_row)
 			
