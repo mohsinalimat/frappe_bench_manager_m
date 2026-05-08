@@ -43,8 +43,64 @@ frappe.ui.form.on('App', {
 				});
 			});
 		} else {
-			// === GIT OPERATIONS GROUP ===
-			frm.add_custom_button(__('Commit'), function(){
+			// === PRIMARY ACTIONS (Always Visible) ===
+			
+			// Update App button
+			frm.add_custom_button(__('🔄 Update App'), function(){
+				frappe.confirm(
+					__('Pull latest code, clear cache, and restart bench?'),
+					() => {
+						let key = frappe.datetime.get_datetime_as_string();
+						console_dialog(key);
+						frm.call("console_command", {
+							key: key,
+							caller: "update_app"
+						}).then(() => {
+							setTimeout(() => {
+								frappe.msgprint({
+									title: __('App Updated'),
+									message: __('App {0} has been updated successfully', [frm.doc.name]),
+									indicator: 'green'
+								});
+								setTimeout(() => frm.reload_doc(), 2000);
+							}, 5000);
+						});
+					}
+				);
+			}).css({'font-weight': 'bold', 'background-color': '#f0f4ff'});
+			
+			// Install to Site button
+			frm.add_custom_button(__('📦 Install to Site'), function(){
+				frappe.prompt([
+					{
+						fieldname: 'site',
+						fieldtype: 'Link',
+						options: 'Site',
+						label: 'Select Site',
+						reqd: 1
+					}
+				], (values) => {
+					let key = frappe.datetime.get_datetime_as_string();
+					console_dialog(key);
+					frm.call("install_to_site", {
+						key: key,
+						site_name: values.site
+					}).then(() => {
+						setTimeout(() => {
+							frappe.msgprint({
+								title: __('App Installed'),
+								message: __('App {0} installed to {1}', [frm.doc.name, values.site]),
+								indicator: 'green'
+							});
+						}, 3000);
+					});
+				}, __('Install App to Site'));
+			});
+			
+			// === DEVELOPER TOOLS (Hidden by default) ===
+			if (frappe.boot.developer_mode || frm.doc.developer_flag) {
+				// === GIT OPERATIONS GROUP ===
+				frm.add_custom_button(__('Commit'), function(){
 				var dialog = new frappe.ui.Dialog({
 					title: 'Commit Message',
 					fields: [
@@ -77,7 +133,7 @@ frappe.ui.form.on('App', {
 						});
 					}
 				);
-			}, __('Git Operations'));
+			}).css({'color': '#d9534f'});
 			
 			frm.add_custom_button(__('Stash'), function(){
 				let key = frappe.datetime.get_datetime_as_string();
@@ -103,15 +159,6 @@ frappe.ui.form.on('App', {
 				frm.call("console_command", {
 					key: key,
 					caller: "status"
-				});
-			}, __('Git Operations'));
-			
-			frm.add_custom_button(__('Fetch'), function(){
-				let key = frappe.datetime.get_datetime_as_string();
-				console_dialog(key);
-				frm.call("console_command", {
-					key: key,
-					caller: "git_fetch"
 				});
 			}, __('Git Operations'));
 			
@@ -268,10 +315,16 @@ frappe.ui.form.on('App', {
 					}
 				});
 			}, __('Branch Operations'));
+			} // End developer tools
 		
-		// === VERSION MANAGEMENT GROUP ===
-		if (frm.doc.repository_url) {
-			frm.add_custom_button(__('Sync Versions'), function(){
+		// === VERSION MANAGEMENT (Simplified) ===
+		if (frm.doc.repository_url && frm.doc.enable_github_sync) {
+			// Show last sync info
+			if (frm.doc.last_synced) {
+				frm.dashboard.add_comment(__('Last synced: {0}', [frappe.datetime.comment_when(frm.doc.last_synced)]), 'blue', true);
+			}
+			
+			frm.add_custom_button(__('🔄 Refresh Versions'), function(){
 				frappe.confirm(
 					__('Fetch latest versions and releases from GitHub?'),
 					() => {
@@ -380,11 +433,10 @@ frappe.ui.form.on('App', {
 				frm.call('sync_branches_from_github').catch(() => {
 					progress_dialog.hide();
 				});
-			}, __('Version Management'));
-		}
+			}, __('Manage Versions'));
 		
-		if (frm.doc.versions && frm.doc.versions.length > 0) {
-			frm.add_custom_button(__('Update to Version'), function(){
+			// Main version management button
+			frm.add_custom_button(__('📋 View All Versions'), function(){
 				let version_options = frm.doc.versions.map(v => ({
 					label: `${v.version} ${v.is_current ? '(Current)' : ''} ${v.is_latest ? '(Latest)' : ''} ${v.is_prerelease ? '(Pre-release)' : ''}`,
 					value: v.version,
@@ -451,9 +503,9 @@ frappe.ui.form.on('App', {
 					}
 				});
 				d.show();
-			}, __('Version Management'));
+			}, __('Manage Versions'));
 			
-			frm.add_custom_button(__('Rollback'), function(){
+			frm.add_custom_button(__('⏮️ Rollback'), function(){
 				let installed_versions = frm.doc.versions.filter(v => v.status === 'Installed');
 				if (installed_versions.length === 0) {
 					frappe.msgprint(__('No previous versions available for rollback'));
@@ -489,11 +541,9 @@ frappe.ui.form.on('App', {
 						}
 					);
 				}, __('Rollback to Previous Version'));
-			}, __('Version Management'));
-		}
-		
-		if (frm.doc.branches && frm.doc.branches.length > 0) {
-			frm.add_custom_button(__('Switch Branch'), function(){
+			}, __('Manage Versions'));
+			
+			frm.add_custom_button(__('🔀 Switch Branch'), function(){
 				let branch_options = frm.doc.branches.map(b => 
 					`${b.branch_name} ${b.is_active ? '(Active)' : ''}`
 				);
@@ -521,61 +571,11 @@ frappe.ui.form.on('App', {
 						}
 					);
 				}, __('Switch Branch'));
-			}, __('Version Management'));
-		}
+			}, __('Manage Versions'));
+		} // End version management
 		
-		// === APP OPERATIONS GROUP ===
-		frm.add_custom_button(__('Update App'), function(){
-			frappe.confirm(
-				__('This will pull the latest code from the current branch ({0}), rebuild assets, and restart the bench. Continue?', [frm.doc.current_git_branch]),
-				() => {
-					let key = frappe.datetime.get_datetime_as_string();
-					console_dialog(key);
-					frm.call("console_command", {
-						key: key,
-						caller: "update_app"
-					}).then(() => {
-						setTimeout(() => {
-							frappe.msgprint({
-								title: __('App Updated'),
-								message: __('App {0} has been updated successfully. Reloading...', [frm.doc.name]),
-								indicator: 'green'
-							});
-							setTimeout(() => frm.reload_doc(), 2000);
-						}, 5000);
-					});
-				}
-			);
-		}, __('App Operations'));
-		
-		frm.add_custom_button(__('Install to Site'), function(){
-			frappe.prompt([
-				{
-					fieldname: 'site',
-					fieldtype: 'Link',
-					options: 'Site',
-					label: 'Select Site',
-					reqd: 1
-				}
-			], (values) => {
-				let key = frappe.datetime.get_datetime_as_string();
-				console_dialog(key);
-				frm.call("install_to_site", {
-					key: key,
-					site_name: values.site
-				}).then(() => {
-					setTimeout(() => {
-						frappe.msgprint({
-							title: __('App Installed'),
-							message: __('App {0} has been installed to site {1}', [frm.doc.name, values.site]),
-							indicator: 'green'
-						});
-					}, 3000);
-				});
-			}, __('Install App to Site'));
-		}, __('App Operations'));
-		
-		frm.add_custom_button(__('Remove App'), function(){
+		// === REMOVE APP (Danger Zone) ===
+		frm.add_custom_button(__('🗑️ Remove App'), function(){
 			var dialog = new frappe.ui.Dialog({
 				title: 'Remove App - Warning',
 				fields: [
