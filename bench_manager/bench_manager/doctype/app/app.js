@@ -275,16 +275,110 @@ frappe.ui.form.on('App', {
 				frappe.confirm(
 					__('Fetch latest versions and releases from GitHub?'),
 					() => {
-						frm.call('sync_versions_from_github').then(() => {
-							frm.reload_doc();
+						// Show progress dialog
+						let progress_dialog = new frappe.ui.Dialog({
+							title: __('Syncing Versions'),
+							fields: [
+								{
+									fieldname: 'progress_html',
+									fieldtype: 'HTML'
+								}
+							],
+							primary_action_label: __('Close'),
+							primary_action: function() {
+								progress_dialog.hide();
+								frm.reload_doc();
+							}
+						});
+						
+						progress_dialog.fields_dict.progress_html.$wrapper.html(`
+							<div class="progress" style="height: 25px; margin-bottom: 15px;">
+								<div class="progress-bar progress-bar-striped progress-bar-animated" 
+									role="progressbar" 
+									style="width: 0%;" 
+									id="version-sync-progress-bar">0%</div>
+							</div>
+							<p id="version-sync-status" class="text-muted">Starting sync...</p>
+						`);
+						
+						progress_dialog.show();
+						progress_dialog.$wrapper.find('.btn-primary').hide();
+						
+						// Listen for progress updates
+						frappe.realtime.on('version_sync_progress', (data) => {
+							let progress_bar = $('#version-sync-progress-bar');
+							let status_text = $('#version-sync-status');
+							
+							progress_bar.css('width', data.progress + '%');
+							progress_bar.text(data.progress + '%');
+							status_text.text(data.message);
+							
+							if (data.progress === 100) {
+								progress_bar.removeClass('progress-bar-animated');
+								progress_bar.addClass('bg-success');
+								setTimeout(() => {
+									progress_dialog.$wrapper.find('.btn-primary').show();
+								}, 1000);
+							}
+						});
+						
+						frm.call('sync_versions_from_github').catch(() => {
+							progress_dialog.hide();
 						});
 					}
 				);
 			}, __('Version Management'));
 			
 			frm.add_custom_button(__('Sync Branches'), function(){
-				frm.call('sync_branches_from_github').then(() => {
-					frm.reload_doc();
+				// Show progress dialog
+				let progress_dialog = new frappe.ui.Dialog({
+					title: __('Syncing Branches'),
+					fields: [
+						{
+							fieldname: 'progress_html',
+							fieldtype: 'HTML'
+						}
+					],
+					primary_action_label: __('Close'),
+					primary_action: function() {
+						progress_dialog.hide();
+						frm.reload_doc();
+					}
+				});
+				
+				progress_dialog.fields_dict.progress_html.$wrapper.html(`
+					<div class="progress" style="height: 25px; margin-bottom: 15px;">
+						<div class="progress-bar progress-bar-striped progress-bar-animated" 
+							role="progressbar" 
+							style="width: 0%;" 
+							id="branch-sync-progress-bar">0%</div>
+					</div>
+					<p id="branch-sync-status" class="text-muted">Starting sync...</p>
+				`);
+				
+				progress_dialog.show();
+				progress_dialog.$wrapper.find('.btn-primary').hide();
+				
+				// Listen for progress updates
+				frappe.realtime.on('branch_sync_progress', (data) => {
+					let progress_bar = $('#branch-sync-progress-bar');
+					let status_text = $('#branch-sync-status');
+					
+					progress_bar.css('width', data.progress + '%');
+					progress_bar.text(data.progress + '%');
+					status_text.text(data.message);
+					
+					if (data.progress === 100) {
+						progress_bar.removeClass('progress-bar-animated');
+						progress_bar.addClass('bg-success');
+						setTimeout(() => {
+							progress_dialog.$wrapper.find('.btn-primary').show();
+						}, 1000);
+					}
+				});
+				
+				frm.call('sync_branches_from_github').catch(() => {
+					progress_dialog.hide();
 				});
 			}, __('Version Management'));
 		}

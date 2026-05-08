@@ -414,20 +414,45 @@ class App(Document):
 			frappe.throw("Repository URL is required for GitHub sync")
 		
 		try:
+			frappe.publish_realtime(
+				'version_sync_progress',
+				{'progress': 10, 'message': 'Connecting to GitHub...'},
+				user=frappe.session.user
+			)
+			
 			github = GitHubAPI(self.repository_url, self.github_token)
 			
 			# Clear existing versions
 			self.versions = []
 			
+			frappe.publish_realtime(
+				'version_sync_progress',
+				{'progress': 20, 'message': 'Fetching releases from GitHub...'},
+				user=frappe.session.user
+			)
+			
 			# Get releases from GitHub
 			releases = github.get_releases()
 			release_dict = {r['tag_name']: r for r in releases}
 			
+			frappe.publish_realtime(
+				'version_sync_progress',
+				{'progress': 40, 'message': f'Found {len(releases)} releases. Fetching tags...'},
+				user=frappe.session.user
+			)
+			
 			# Get all tags
 			tags = github.get_tags()
 			
+			frappe.publish_realtime(
+				'version_sync_progress',
+				{'progress': 60, 'message': f'Processing {len(tags)} versions...'},
+				user=frappe.session.user
+			)
+			
 			# Process each tag
-			for tag in tags:
+			total_tags = len(tags)
+			for idx, tag in enumerate(tags):
 				tag_name = tag['name']
 				version_number = extract_version_from_tag(tag_name)
 				
@@ -459,6 +484,21 @@ class App(Document):
 						version_row['release_date'] = self.parse_github_datetime(commit_date)
 				
 				self.append('versions', version_row)
+				
+				# Update progress every 10 tags
+				if (idx + 1) % 10 == 0 or idx == total_tags - 1:
+					progress = 60 + int((idx + 1) / total_tags * 20)
+					frappe.publish_realtime(
+						'version_sync_progress',
+						{'progress': progress, 'message': f'Processed {idx + 1}/{total_tags} versions...'},
+						user=frappe.session.user
+					)
+			
+			frappe.publish_realtime(
+				'version_sync_progress',
+				{'progress': 85, 'message': 'Analyzing versions...'},
+				user=frappe.session.user
+			)
 			
 			# Mark current and latest versions
 			self.update_version_flags()
@@ -468,8 +508,25 @@ class App(Document):
 			self.sync_status = 'Success'
 			self.sync_error = None
 			
+			frappe.publish_realtime(
+				'version_sync_progress',
+				{'progress': 95, 'message': 'Saving data...'},
+				user=frappe.session.user
+			)
+			
 			self.save()
-			frappe.msgprint(f"Successfully synced {len(self.versions)} versions from GitHub")
+			
+			frappe.publish_realtime(
+				'version_sync_progress',
+				{'progress': 100, 'message': f'✓ Successfully synced {len(self.versions)} versions!'},
+				user=frappe.session.user
+			)
+			
+			frappe.msgprint({
+				'title': 'Sync Complete',
+				'message': f'Successfully synced {len(self.versions)} versions from GitHub',
+				'indicator': 'green'
+			})
 			
 		except Exception as e:
 			self.sync_status = 'Failed'
@@ -484,15 +541,34 @@ class App(Document):
 			frappe.throw("Repository URL is required for GitHub sync")
 		
 		try:
+			frappe.publish_realtime(
+				'branch_sync_progress',
+				{'progress': 20, 'message': 'Connecting to GitHub...'},
+				user=frappe.session.user
+			)
+			
 			github = GitHubAPI(self.repository_url, self.github_token)
 			
 			# Clear existing branches
 			self.branches = []
 			
+			frappe.publish_realtime(
+				'branch_sync_progress',
+				{'progress': 40, 'message': 'Fetching branches...'},
+				user=frappe.session.user
+			)
+			
 			# Get branches from GitHub
 			branches = github.get_branches()
 			
-			for branch in branches:
+			frappe.publish_realtime(
+				'branch_sync_progress',
+				{'progress': 60, 'message': f'Processing {len(branches)} branches...'},
+				user=frappe.session.user
+			)
+			
+			total_branches = len(branches)
+			for idx, branch in enumerate(branches):
 				branch_name = branch['name']
 				commit = branch['commit']
 				
@@ -512,9 +588,34 @@ class App(Document):
 						branch_row['last_commit_date'] = self.parse_github_datetime(commit_date)
 				
 				self.append('branches', branch_row)
+				
+				# Update progress
+				progress = 60 + int((idx + 1) / total_branches * 30)
+				frappe.publish_realtime(
+					'branch_sync_progress',
+					{'progress': progress, 'message': f'Processed {idx + 1}/{total_branches} branches...'},
+					user=frappe.session.user
+				)
+			
+			frappe.publish_realtime(
+				'branch_sync_progress',
+				{'progress': 95, 'message': 'Saving data...'},
+				user=frappe.session.user
+			)
 			
 			self.save()
-			frappe.msgprint(f"Successfully synced {len(self.branches)} branches from GitHub")
+			
+			frappe.publish_realtime(
+				'branch_sync_progress',
+				{'progress': 100, 'message': f'✓ Successfully synced {len(self.branches)} branches!'},
+				user=frappe.session.user
+			)
+			
+			frappe.msgprint({
+				'title': 'Sync Complete',
+				'message': f'Successfully synced {len(self.branches)} branches from GitHub',
+				'indicator': 'green'
+			})
 			
 		except Exception as e:
 			frappe.throw(f"Failed to sync branches: {str(e)}")
