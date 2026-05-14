@@ -1,2 +1,0 @@
-import{h as a,j as s,f as e}from"./vue-vendor-BNGP8MTa.js";const o={class:"min-h-screen bg-gray-50 py-8"},r={__name:"Payouts",setup(l){return(p,t)=>(e(),a("div",o,[...t[0]||(t[0]=[s("div",{class:"w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16"},[s("div",{class:"max-w-[1600px] mx-auto"},[s("h1",{class:"text-2xl font-bold text-gray-900 mb-6"},"Payouts"),s("p",{class:"text-gray-600"},"Payouts page - Coming Soon")])],-1)])]))}};export{r as default};
-//# sourceMappingURL=Payouts-DKvlAZtZ.js.map
