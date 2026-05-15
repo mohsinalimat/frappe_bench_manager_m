@@ -6,47 +6,69 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "site_name",
-  "app_list",
-  "install_erpnext",
-  "column_break_3",
-  "site_alias",
+  "site_monitoring_tab",
   "site_monitoring_section",
+  "bench_node",
   "site_url",
-  "site_status",
   "column_break_monitoring",
-  "last_checked",
-  "response_time",
+  "status",
   "check_status_button",
+  "column_break_kuyz",
+  "response_time",
+  "last_checked",
+  "site_configuration_tab",
+  "other_settings",
+  "column_break_cryn",
+  "developer_mode",
+  "column_break_12",
+  "pause_scheduler",
+  "column_break_sqoa",
+  "ignore_csrf",
+  "column_break_xylt",
+  "disable_website_cache",
+  "column_break_hhfl",
+  "maintenance_mode",
+  "column_break_eics",
+  "html_qhtc",
   "section_break_6",
   "db_name",
   "column_break_8",
   "db_password",
   "backup_settings_section",
   "auto_backup",
-  "frequency",
+  "column_break_nsxw",
   "dropbox_backup",
-  "other_settings",
-  "column_break_cryn",
-  "column_break_12",
-  "developer_mode",
-  "maintenance_mode",
-  "pause_scheduler",
-  "ignore_csrf",
-  "disable_website_cache",
+  "column_break_sqiz",
+  "frequency",
+  "details_tab",
+  "domain_section",
+  "full_domain",
+  "column_break_domain",
+  "subdomain",
+  "section_break_nhsk",
+  "site_name",
+  "app_list",
+  "install_erpnext",
+  "column_break_3",
+  "site_domain",
+  "site_alias",
   "limits",
   "expiry",
-  "space",
   "column_break_17",
   "emails",
+  "column_break_oeoa",
+  "space",
   "space_usage",
-  "backup_size",
-  "database_size",
-  "column_break_22",
-  "files_size",
   "total",
-  "developer_flag",
-  "bench_settings"
+  "column_break_22",
+  "backup_size",
+  "column_break_wwpz",
+  "files_size",
+  "column_break_axyy",
+  "database_size",
+  "column_break_igpw",
+  "column_break_ujzw",
+  "developer_flag"
  ],
  "fields": [
   {
@@ -62,7 +84,6 @@
    "depends_on": "eval:!(doc.__islocal)",
    "fieldname": "app_list",
    "fieldtype": "Text",
-   "in_list_view": 1,
    "label": "App List",
    "read_only": 1
   },
@@ -80,30 +101,52 @@
   {
    "fieldname": "site_alias",
    "fieldtype": "Text",
-   "in_list_view": 1,
    "label": "Site Alias",
    "read_only": 1
   },
   {
+   "fieldname": "domain_section",
+   "fieldtype": "Section Break",
+   "label": "Domain Configuration"
+  },
+  {
+   "depends_on": "eval:doc.__islocal",
+   "description": "Select a managed domain for this site",
+   "fieldname": "site_domain",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Site Domain",
+   "options": "Site Domain"
+  },
+  {
+   "depends_on": "eval:doc.__islocal && doc.site_domain",
+   "description": "e.g., 'app' for app.example.com",
+   "fieldname": "subdomain",
+   "fieldtype": "Data",
+   "label": "Subdomain"
+  },
+  {
+   "depends_on": "eval:doc.site_domain",
+   "fieldname": "full_domain",
+   "fieldtype": "Data",
+   "label": "Full Domain",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_domain",
+   "fieldtype": "Column Break"
+  },
+  {
    "depends_on": "eval:!(doc.__islocal)",
    "fieldname": "site_monitoring_section",
-   "fieldtype": "Section Break",
-   "label": "Site Monitoring"
+   "fieldtype": "Section Break"
   },
   {
    "description": "Full URL to monitor (e.g., http://localhost:8000)",
    "fieldname": "site_url",
    "fieldtype": "Data",
    "label": "Site URL"
-  },
-  {
-   "default": "Unknown",
-   "fieldname": "site_status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Site Status",
-   "options": "Unknown\nOnline\nOffline\nError",
-   "read_only": 1
   },
   {
    "fieldname": "column_break_monitoring",
@@ -118,6 +161,7 @@
   {
    "fieldname": "response_time",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Response Time (ms)",
    "precision": "2",
    "read_only": 1
@@ -154,8 +198,7 @@
   {
    "depends_on": "eval:!(doc.__islocal)",
    "fieldname": "other_settings",
-   "fieldtype": "Section Break",
-   "label": "Other Settings"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "column_break_12",
@@ -165,7 +208,9 @@
    "default": "0",
    "fieldname": "developer_mode",
    "fieldtype": "Check",
-   "label": "Developer Mode"
+   "in_list_view": 1,
+   "label": "Developer Mode",
+   "width": "1"
   },
   {
    "default": "0",
@@ -177,7 +222,9 @@
    "default": "0",
    "fieldname": "pause_scheduler",
    "fieldtype": "Check",
-   "label": "Pause Scheduler"
+   "in_list_view": 1,
+   "label": "Pause Scheduler",
+   "width": "1"
   },
   {
    "default": "0",
@@ -262,11 +309,13 @@
    "read_only": 1
   },
   {
-   "fieldname": "bench_settings",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Bench Settings",
-   "read_only": 1
+   "default": "Local Bench",
+   "fieldname": "bench_node",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Bench Node",
+   "options": "Bench Node Manager"
   },
   {
    "fieldname": "backup_settings_section",
@@ -277,6 +326,7 @@
    "default": "0",
    "fieldname": "auto_backup",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Auto Backup"
   },
   {
@@ -296,14 +346,100 @@
   {
    "fieldname": "column_break_cryn",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_sqoa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_xylt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_hhfl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_kuyz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_nsxw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_sqiz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_oeoa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_wwpz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_axyy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_igpw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ujzw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_nhsk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "site_configuration_tab",
+   "fieldtype": "Tab Break",
+   "label": "Site configuration"
+  },
+  {
+   "fieldname": "site_monitoring_tab",
+   "fieldtype": "Tab Break",
+   "label": "Site Monitoring"
+  },
+  {
+   "fieldname": "column_break_eics",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "html_qhtc",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "default": "Unknown",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Unknown\nOnline\nOffline\nError",
+   "read_only": 1
   }
  ],
  "in_create": 1,
- "links": [],
- "modified": "2026-04-16 00:02:10.876136",
+ "links": [
+  {
+   "link_doctype": "Site Domain",
+   "link_fieldname": "domain_name"
+  }
+ ],
+ "modified": "2026-05-15 17:46:15.498170",
  "modified_by": "Administrator",
  "module": "Bench Manager",
  "name": "Site",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

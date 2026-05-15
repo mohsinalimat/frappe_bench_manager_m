@@ -41,6 +41,8 @@ class App(Document):
 			if self.developer_flag == 0:
 				frappe.throw("Creation of new apps is not supported at the moment!")
 			self.developer_flag = 0
+			# Set bench_node to Local Bench (apps are always local)
+			self.bench_node = "Local Bench"
 			# Wait for PKG-INFO with timeout (max 30 seconds)
 			app_data_path = os.path.join(
 				"..",
@@ -269,7 +271,7 @@ class App(Document):
 	@frappe.whitelist()
 	def console_command(self, key, caller, branch_name=None, remote=None, commit_msg=None, force=0):
 		# Get git user configuration from Bench Settings
-		bench_settings = frappe.get_single("Bench Settings")
+		bench_settings = frappe.get_doc("Bench Node Manager", "Local Bench")
 		github_username = bench_settings.get("github_username") or ""
 		git_user_email = bench_settings.get("git_user_email") or ""
 		use_ssh = bench_settings.get("use_ssh_for_git") or 0
@@ -421,7 +423,7 @@ class App(Document):
 			)
 			
 			# Get GitHub token from Bench Settings (centralized)
-			bench_settings = frappe.get_single('Bench Settings')
+			bench_settings = frappe.get_doc('Bench Node Manager', 'Local Bench')
 			github_token = bench_settings.get('github_password') or self.github_token or None
 			
 			github = GitHubAPI(self.repository_url, github_token)
@@ -548,7 +550,7 @@ class App(Document):
 			)
 			
 			# Get GitHub token from Bench Settings (centralized)
-			bench_settings = frappe.get_single('Bench Settings')
+			bench_settings = frappe.get_doc('Bench Node Manager', 'Local Bench')
 			github_token = bench_settings.get('github_password') or self.github_token or None
 			
 			github = GitHubAPI(self.repository_url, github_token)

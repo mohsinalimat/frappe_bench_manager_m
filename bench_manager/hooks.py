@@ -155,22 +155,26 @@ scheduler_events = {
 		],
 		"*/5 * * * *": [
 			"bench_manager.bench_manager.doctype.site.site.check_all_sites"
+		],
+		"*/1 * * * *": [
+			"bench_manager.bench_manager.doctype.site_domain.site_domain.check_all_domain_verifications"
 		]
 	},
     "hourly": [
-		"bench_manager.bench_manager.doctype.bench_settings.bench_settings.auto_sync_all"
+		"bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.auto_sync_all",
+		"bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.cleanup_idle_ssh_connections"
 	],
     "daily_long": [
-		"bench_manager.bench_manager.doctype.bench_settings.bench_settings.backup_sites_with_daily_option",
-		"bench_manager.bench_manager.doctype.bench_settings.bench_settings.dropbox_backup_sites_with_daily_option"
+		"bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.backup_sites_with_daily_option",
+		"bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.dropbox_backup_sites_with_daily_option"
 	],
     "monthly_long": [
-		"bench_manager.bench_manager.doctype.bench_settings.bench_settings.backup_sites_with_monthly_option",
-		"bench_manager.bench_manager.doctype.bench_settings.bench_settings.dropbox_backup_sites_with_weekly_option"
+		"bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.backup_sites_with_monthly_option",
+		"bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.dropbox_backup_sites_with_weekly_option"
 	],
     "weekly_long":[
-        "bench_manager.bench_manager.doctype.bench_settings.bench_settings.backup_sites_with_weekly_option",
-        "bench_manager.bench_manager.doctype.bench_settings.bench_settings.dropbox_backup_sites_with_monthly_option"
+        "bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.backup_sites_with_weekly_option",
+        "bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.dropbox_backup_sites_with_monthly_option"
 	]
 }
 

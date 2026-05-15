@@ -1,5 +1,5 @@
 frappe.listview_settings['Site'] = {
-	add_fields: ['site_status'],
+	add_fields: ['status'],
 	formatters: {
 		app_list: function(val) {
 			return val.split('\n').join(', ');
@@ -9,14 +9,14 @@ frappe.listview_settings['Site'] = {
 		}	
 	},
 	get_indicator: function(doc) {
-		if (doc.site_status === 'Online') {
-			return [__('Online'), 'green', 'site_status,=,Online'];
-		} else if (doc.site_status === 'Offline') {
-			return [__('Offline'), 'red', 'site_status,=,Offline'];
-		} else if (doc.site_status === 'Error') {
-			return [__('Error'), 'orange', 'site_status,=,Error'];
+		if (doc.status === 'Online') {
+			return [__('Online'), 'green', 'status,=,Online'];
+		} else if (doc.status === 'Offline') {
+			return [__('Offline'), 'red', 'status,=,Offline'];
+		} else if (doc.status === 'Error') {
+			return [__('Error'), 'orange', 'status,=,Error'];
 		} else {
-			return [__('Unknown'), 'gray', 'site_status,=,Unknown'];
+			return [__('Unknown'), 'gray', 'status,=,Unknown'];
 		}
 	},
 	refresh: () => {

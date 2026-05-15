@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "creation": "2026-05-14 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "record_type",
+  "dns_name",
+  "value",
+  "column_break_1",
+  "priority",
+  "ttl",
+  "proxied",
+  "status"
+ ],
+ "fields": [
+  {
+   "default": "A",
+   "fieldname": "record_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Record Type",
+   "options": "A\nAAAA\nCNAME\nMX\nTXT\nNS\nSRV",
+   "reqd": 1
+  },
+  {
+   "fieldname": "dns_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "DNS Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "value",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Value",
+   "length": 1024,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "10",
+   "fieldname": "priority",
+   "fieldtype": "Int",
+   "label": "Priority",
+   "depends_on": "eval:doc.record_type == 'MX' || doc.record_type == 'SRV'"
+  },
+  {
+   "default": "3600",
+   "fieldname": "ttl",
+   "fieldtype": "Int",
+   "label": "TTL (Seconds)"
+  },
+  {
+   "default": "0",
+   "description": "Cloudflare proxy enabled (orange cloud)",
+   "fieldname": "proxied",
+   "fieldtype": "Check",
+   "label": "Proxied"
+  },
+  {
+   "default": "Active",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Active\nInactive"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-05-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bench Manager",
+ "name": "DNS Record",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

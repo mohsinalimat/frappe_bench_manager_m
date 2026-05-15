@@ -10,17 +10,20 @@
   "app_name",
   "app_title",
   "version",
-  "app_description",
-  "app_publisher",
-  "app_email",
   "app_icon",
-  "app_color",
   "app_license",
   "developer_flag",
   "column_break_11",
+  "app_description",
+  "app_publisher",
+  "app_email",
   "current_git_branch",
   "is_git_repo",
-  "bench_settings",
+  "app_color",
+  "bench_node",
+  "section_break_dependencies",
+  "dependencies",
+  "github_details_tab",
   "section_break_version_management",
   "current_version",
   "latest_version",
@@ -29,46 +32,49 @@
   "repository_url",
   "enable_github_sync",
   "github_token",
-  "section_break_sync_status",
-  "last_synced",
-  "sync_status",
-  "sync_error",
-  "section_break_version_history",
-  "versions",
   "section_break_branches",
   "branches",
+  "column_break_qlth",
+  "compatibility",
+  "section_break_tags",
+  "tags",
+  "column_break_ltzl",
+  "versions",
+  "marketplace_settings_tab",
   "section_break_marketplace",
+  "app_logo",
   "is_published",
   "is_featured",
   "category",
-  "pricing_model",
-  "price",
-  "subscription_price",
   "subscription_annual_price",
-  "currency",
   "subscription_duration_days",
-  "license_type",
   "license_duration_days",
   "short_description",
-  "long_description",
-  "app_logo",
   "demo_url",
-  "documentation_url",
-  "github_url",
   "total_downloads",
   "rating",
   "review_count",
   "developer",
   "moderation_status",
+  "column_break_wmlr",
+  "currency",
+  "pricing_model",
+  "price",
+  "subscription_price",
+  "github_url",
+  "documentation_url",
+  "license_type",
+  "long_description",
   "rejection_reason",
+  "sync_status_tab",
+  "section_break_sync_status",
+  "last_synced",
+  "sync_status",
+  "column_break_aqst",
+  "sync_error",
+  "app_screenshots_tab",
   "section_break_screenshots",
-  "screenshots",
-  "section_break_tags",
-  "tags",
-  "section_break_compatibility",
-  "compatibility",
-  "section_break_dependencies",
-  "dependencies"
+  "screenshots"
  ],
  "fields": [
   {
@@ -158,10 +164,10 @@
    "read_only": 1
   },
   {
-   "fieldname": "bench_settings",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Bench Settings",
+   "fieldname": "bench_node",
+   "fieldtype": "Link",
+   "label": "Bench Node",
+   "options": "Bench Node Manager",
    "read_only": 1
   },
   {
@@ -211,8 +217,7 @@
   },
   {
    "fieldname": "section_break_sync_status",
-   "fieldtype": "Section Break",
-   "label": "Sync Status"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "last_synced",
@@ -235,12 +240,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
-   "fieldname": "section_break_version_history",
-   "fieldtype": "Section Break",
-   "label": "Version History"
-  },
-  {
    "fieldname": "versions",
    "fieldtype": "Table",
    "label": "Available Versions",
@@ -260,8 +259,7 @@
   },
   {
    "fieldname": "section_break_marketplace",
-   "fieldtype": "Section Break",
-   "label": "Marketplace Settings"
+   "fieldtype": "Section Break"
   },
   {
    "default": "0",
@@ -413,8 +411,7 @@
   },
   {
    "fieldname": "section_break_screenshots",
-   "fieldtype": "Section Break",
-   "label": "Screenshots"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "screenshots",
@@ -434,11 +431,6 @@
    "options": "App Tag"
   },
   {
-   "fieldname": "section_break_compatibility",
-   "fieldtype": "Section Break",
-   "label": "Compatibility"
-  },
-  {
    "fieldname": "compatibility",
    "fieldtype": "Table",
    "label": "Frappe Version Compatibility",
@@ -454,11 +446,47 @@
    "fieldtype": "Table",
    "label": "App Dependencies",
    "options": "App Dependency"
+  },
+  {
+   "fieldname": "github_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Github Details"
+  },
+  {
+   "fieldname": "marketplace_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "Marketplace Settings"
+  },
+  {
+   "fieldname": "column_break_aqst",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sync_status_tab",
+   "fieldtype": "Tab Break",
+   "label": "Sync Status"
+  },
+  {
+   "fieldname": "app_screenshots_tab",
+   "fieldtype": "Tab Break",
+   "label": "App Screenshots"
+  },
+  {
+   "fieldname": "column_break_qlth",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ltzl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_wmlr",
+   "fieldtype": "Column Break"
   }
  ],
  "in_create": 1,
  "links": [],
- "modified": "2026-04-23 21:28:21.184070",
+ "modified": "2026-05-15 04:46:07.313357",
  "modified_by": "Administrator",
  "module": "Bench Manager",
  "name": "App",

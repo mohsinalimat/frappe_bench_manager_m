@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "creation": "2026-05-14 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "site",
+  "subdomain",
+  "full_domain",
+  "column_break_1",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "site",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Site",
+   "options": "Site",
+   "reqd": 1
+  },
+  {
+   "fieldname": "subdomain",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Subdomain"
+  },
+  {
+   "fieldname": "full_domain",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Full Domain",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Active",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Active\nInactive\nArchived"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-05-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bench Manager",
+ "name": "Site Domain Link",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

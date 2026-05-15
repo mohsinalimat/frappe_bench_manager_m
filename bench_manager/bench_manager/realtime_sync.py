@@ -14,8 +14,11 @@ def check_and_sync_if_needed():
 	Called by scheduler every 15 minutes
 	"""
 	try:
-		# Get last sync timestamp
-		last_sync = frappe.db.get_single_value("Bench Settings", "last_sync_timestamp")
+		# Get last sync timestamp from local bench node
+		local_bench = frappe.db.get_value("Bench Node Manager", {"node_type": "Local Node"}, "name")
+		last_sync = None
+		if local_bench:
+			last_sync = frappe.db.get_value("Bench Node Manager", local_bench, "last_sync_timestamp")
 		
 		if not last_sync:
 			# First time sync
@@ -81,7 +84,7 @@ def check_backups_changed(last_sync):
 
 def trigger_sync():
 	"""Trigger background sync"""
-	from bench_manager.bench_manager.doctype.bench_settings.bench_settings import (
+	from bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager import (
 		sync_sites, sync_apps, sync_backups
 	)
 	
@@ -89,9 +92,12 @@ def trigger_sync():
 	frappe.enqueue(sync_apps, queue="long")
 	frappe.enqueue(sync_backups, queue="long")
 	
-	frappe.set_value(
-		"Bench Settings", None, "last_sync_timestamp", frappe.utils.time.time()
-	)
+	# Update last sync timestamp on local bench
+	local_bench = frappe.db.get_value("Bench Node Manager", {"node_type": "Local Node"}, "name")
+	if local_bench:
+		frappe.set_value(
+			"Bench Node Manager", local_bench, "last_sync_timestamp", frappe.utils.time.time()
+		)
 	frappe.db.commit()
 
 

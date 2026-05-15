@@ -1,2 +1,6 @@
 # No direct dependencies - using tool.bench.frappe-dependencies
 boto3>=1.18.0
+dnspython>=1.16.0
+cloudflare>=5.1.0
+paramiko>=3.0.0
+rsa>=4.9

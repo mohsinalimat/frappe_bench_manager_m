@@ -25,6 +25,11 @@ class SiteBackup(Document):
 			if self.developer_flag == 0:
 				frappe.throw("If you want to create a backup, then goto Sites")
 			self.developer_flag = 0
+			# Set bench_node from the site
+			if self.site_name:
+				site = frappe.db.get_value("Site", {"site_name": self.site_name}, ["bench_node"], as_dict=True)
+				if site and site.bench_node:
+					self.bench_node = site.bench_node
 
 	def on_trash(self):
 		if self.developer_flag == 0:

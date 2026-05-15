@@ -31,11 +31,51 @@ frm.add_custom_button(__('Update Bench'), function() {
 }, __('Bench Operations'));
 
 frm.add_custom_button(__('Clear Cache'), function() {
-	let key = frappe.datetime.get_datetime_as_string();
-	console_dialog(key);
-	frm.call('console_command', {
-		key: key,
-		caller: 'bench_clear_cache'
+	frappe.call({
+		method: 'bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.get_local_sites',
+		freeze: true,
+		freeze_message: __('Fetching sites...'),
+		callback: function(r) {
+			if (r.message && r.message.success && r.message.sites && r.message.sites.length > 0) {
+				const dialog = new frappe.ui.Dialog({
+					title: __('Select Site to Clear Cache'),
+					fields: [
+						{
+							fieldname: 'site',
+							label: __('Site'),
+							fieldtype: 'Select',
+							options: r.message.sites,
+							reqd: 1
+						}
+					],
+					primary_action_label: __('Clear Cache'),
+					primary_action: function() {
+						const site = dialog.fields_dict.site.value;
+						dialog.hide();
+
+						frappe.confirm(
+							__('This will clear cache for {0}. Continue?', [site]),
+							() => {
+								let key = frappe.datetime.get_datetime_as_string();
+								console_dialog(key);
+								frm.call('console_command', {
+									key: key,
+									caller: 'bench_clear_cache',
+									site_name: site
+								});
+							}
+						);
+					}
+				});
+				dialog.show();
+			} else {
+				frappe.msgprint({
+					title: __('No Sites Found'),
+					message: __('No sites found on the local bench'),
+					indicator: 'red'
+				});
+			}
+		}
 	});
 }, __('Bench Operations'));
 
@@ -65,7 +105,7 @@ frm.add_custom_button(__('Build Assets'), function() {
 // === SYNC GROUP ===
 frm.add_custom_button(__('Sync Sites & Apps'), () => {
 	frappe.call({
-		method: 'bench_manager.bench_manager.doctype.bench_settings.bench_settings.sync_all',
+		method: 'bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.sync_all',
 		callback: function(r) {
 			frappe.show_alert({
 				message: __('Sites and Apps synced successfully'),

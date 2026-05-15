@@ -43,6 +43,13 @@
    "unique": 0
   }, 
   {
+   "fieldname": "bench_node",
+   "fieldtype": "Link",
+   "label": "Bench Node",
+   "options": "Bench Node Manager",
+   "read_only": 1
+  },
+  {
    "allow_bulk_edit": 0, 
    "allow_on_submit": 0, 
    "bold": 0, 

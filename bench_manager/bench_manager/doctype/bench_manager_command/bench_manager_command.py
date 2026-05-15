@@ -11,4 +11,7 @@ from frappe.model.naming import make_autoname
 
 
 class BenchManagerCommand(Document):
-	pass
+	def validate(self):
+		# Set bench_node to Local Bench for commands
+		if self.get("__islocal"):
+			self.bench_node = "Local Bench"

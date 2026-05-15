@@ -17,7 +17,7 @@ from bench_manager.bench_manager.utils import (
 	verify_whitelisted_call,
 )
 from frappe.model.document import Document
-from bench_manager.bench_manager.doctype.bench_settings.bench_settings import sync_sites
+from bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager import sync_sites
 class Site(Document):
 	site_config_fields = [
 		"maintenance_mode",
@@ -39,11 +39,16 @@ class Site(Document):
 		return setattr(self, varname, varval)
 
 	def validate(self):
+		# Validate domain configuration
+		self.validate_domain_config()
+		
 		# Auto-populate site_url if empty
 		if not self.site_url and self.site_name:
 			self.site_url = f"http://{self.site_name}"
 		
 		if self.get("__islocal"):
+			# Set bench_node to Local Bench (sites are always local)
+			self.bench_node = "Local Bench"
 			if self.developer_flag == 0:
 				self.create_site(self.key)
 			site_config_path = self.site_name + "/site_config.json"
@@ -57,6 +62,78 @@ class Site(Document):
 
 	def after_command(self, commands=None):
 		frappe.publish_realtime("Bench-Manager:reload-page")
+
+	def validate_domain_config(self):
+		"""Validate domain configuration for the site"""
+		if self.site_domain:
+			# Validate that domain exists and is active
+			try:
+				domain = frappe.get_doc("Site Domain", self.site_domain)
+			except frappe.DoesNotExist:
+				frappe.throw(f"Site Domain {self.site_domain} does not exist")
+			
+			if domain.status != "Active":
+				frappe.throw(f"Domain {domain.domain_name} is not active (Status: {domain.status})")
+			
+			if not domain.verified:
+				frappe.throw(f"Domain {domain.domain_name} is not verified")
+			
+			# Validate subdomain if provided
+			if self.subdomain:
+				# Check subdomain format
+				if not re.match(r'^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$', self.subdomain.lower()):
+					frappe.throw(
+						"Invalid subdomain format. Use lowercase letters, numbers, and hyphens. "
+						"Cannot start or end with hyphen."
+					)
+				
+				if len(self.subdomain) > 63:
+					frappe.throw("Subdomain cannot exceed 63 characters")
+				
+				self.subdomain = self.subdomain.lower()
+				
+				# Check if subdomain is already in use
+				existing_site = frappe.db.exists("Site", {
+					"site_domain": self.site_domain,
+					"subdomain": self.subdomain,
+					"name": ["!=", self.name] if self.name else None
+				})
+				
+				if existing_site:
+					frappe.throw(f"Subdomain '{self.subdomain}' is already in use on this domain")
+			
+			# Generate full domain
+			if self.subdomain:
+				self.full_domain = f"{self.subdomain}.{domain.domain_name}"
+			else:
+				self.full_domain = domain.domain_name
+			
+			# Update SSL status from domain
+			self.ssl_enabled = domain.ssl_status == "Installed"
+			
+			# Update site_url if using domain
+			if domain.ssl_status == "Installed":
+				self.site_url = f"https://{self.full_domain}"
+			else:
+				self.site_url = f"http://{self.full_domain}"
+
+	def update_domain_site_count(self):
+		"""Update the current_sites count in the domain"""
+		if self.site_domain:
+			try:
+				domain = frappe.get_doc("Site Domain", self.site_domain)
+				domain.update_current_sites_count()
+				domain.save()
+			except frappe.DoesNotExist:
+				pass
+
+	def before_save(self):
+		"""Before save hook"""
+		self.update_domain_site_count()
+
+	def on_trash(self):
+		"""Before delete hook"""
+		self.update_domain_site_count()
 
 	@frappe.whitelist()
 	def populate_site_url(self):
@@ -262,7 +339,7 @@ class Site(Document):
 		elif results.get('http', {}).get('status') == 'Online':
 			overall_status = 'Online'
 		
-		self.db_set('site_status', overall_status)
+		self.db_set('status', overall_status)
 		
 		# Set response time from the working protocol (prefer HTTPS)
 		if results.get('https', {}).get('status') == 'Online':
@@ -284,7 +361,7 @@ class Site(Document):
 		self, key, caller, alias=None, app_name=None, admin_password=None, mysql_password=None
 	):
 		# Use Bench Settings passwords instead of hardcoded dev_config
-		bench_settings = frappe.get_single("Bench Settings")
+		bench_settings = frappe.get_doc("Bench Node Manager", "Local Bench")
 		
 		# Get passwords with fallback
 		if not admin_password:
@@ -399,7 +476,7 @@ def pass_exists(doctype, docname=""):
 	# If not in common_site_config, get from Bench Settings
 	if not root_password or not admin_password:
 		try:
-			bench_settings = frappe.get_single("Bench Settings")
+			bench_settings = frappe.get_doc("Bench Node Manager", "Local Bench")
 			if not root_password:
 				root_password = bench_settings.get("mysql_root_password") or ""
 			if not admin_password:
@@ -448,7 +525,7 @@ def get_bench_settings_passwords():
 	"""Debug method to check what passwords are stored in Bench Settings"""
 	verify_whitelisted_call()
 	try:
-		bench_settings = frappe.get_single("Bench Settings")
+		bench_settings = frappe.get_doc("Bench Node Manager", "Local Bench")
 		return {
 			"admin_password_set": bool(bench_settings.get("admin_password")),
 			"mysql_root_password_set": bool(bench_settings.get("mysql_root_password")),
@@ -468,7 +545,7 @@ def verify_password(site_name, mysql_password):
 	# If no password provided, try to get from Bench Settings
 	if not mysql_password:
 		try:
-			bench_settings = frappe.get_single("Bench Settings")
+			bench_settings = frappe.get_doc("Bench Node Manager", "Local Bench")
 			mysql_password = bench_settings.get("mysql_root_password") or ""
 			if not mysql_password:
 				frappe.throw("MySQL Root Password not set in Bench Settings. Please set it in Bench Settings > Password Settings > MySQL Root Password")
@@ -545,6 +622,39 @@ def check_site_name_available(site_name):
 
 
 @frappe.whitelist()
+def get_available_domains():
+	"""Get list of active and verified domains for site creation"""
+	verify_whitelisted_call()
+	
+	from bench_manager.bench_manager.doctype.site_domain.site_domain import get_active_domains
+	return get_active_domains()
+
+
+@frappe.whitelist()
+def validate_domain_subdomain(domain_name, subdomain):
+	"""Validate that domain and subdomain combination is available"""
+	verify_whitelisted_call()
+	
+	from bench_manager.bench_manager.doctype.site_domain.site_domain import validate_site_domain
+	return validate_site_domain(domain_name, subdomain)
+
+
+@frappe.whitelist()
+def get_domain_subdomains(domain_name):
+	"""Get existing subdomains for a domain"""
+	verify_whitelisted_call()
+	
+	try:
+		domain = frappe.get_doc("Site Domain", domain_name)
+		return domain.get_available_subdomains()
+	except frappe.DoesNotExist:
+		return {
+			"existing_subdomains": [],
+			"suggestions": []
+		}
+
+
+@frappe.whitelist()
 def get_system_info():
 	"""Get system information for site creation"""
 	verify_whitelisted_call()
@@ -604,13 +714,13 @@ def get_available_apps():
 
 
 @frappe.whitelist()
-def create_site(site_name, install_erpnext=None, apps_to_install=None, mysql_password=None, admin_password=None, key=None, a_async=True):
+def create_site(site_name, install_erpnext=None, apps_to_install=None, mysql_password=None, admin_password=None, key=None, a_async=True, site_domain=None, subdomain=None):
 	verify_whitelisted_call()
 	import json
 	
 	# Get passwords from Bench Settings if not provided
 	if not mysql_password or not admin_password:
-		bench_settings = frappe.get_single("Bench Settings")
+		bench_settings = frappe.get_doc("Bench Node Manager", "Local Bench")
 		if not mysql_password:
 			mysql_password = bench_settings.get("mysql_root_password") or "root"
 		if not admin_password:
@@ -621,6 +731,19 @@ def create_site(site_name, install_erpnext=None, apps_to_install=None, mysql_pas
 			site_name=site_name, admin_password=admin_password, mysql_password=mysql_password
 		)
 	]
+	
+	# Validate domain parameters if provided
+	if site_domain:
+		try:
+			domain = frappe.get_doc("Site Domain", site_domain)
+			if domain.status != "Active":
+				frappe.throw(f"Domain {domain.domain_name} is not active")
+			if not domain.verified:
+				frappe.throw(f"Domain {domain.domain_name} is not verified")
+			if domain.current_sites >= domain.max_sites:
+				frappe.throw(f"Domain {domain.domain_name} has reached maximum sites limit")
+		except frappe.DoesNotExist:
+			frappe.throw(f"Site Domain {site_domain} does not exist")
 	
 	# Handle multiple apps installation
 	if apps_to_install:
@@ -661,14 +784,23 @@ def create_site(site_name, install_erpnext=None, apps_to_install=None, mysql_pas
 		doctype="Bench Settings",
 		key=key,
 		site_name = site_name,
-		is_async = a_async
+		is_async = a_async,
+		site_domain = site_domain,
+		subdomain = subdomain
 	)
 
-def jop_site_creation(commands, doctype, key,site_name):
+def jop_site_creation(commands, doctype, key,site_name, site_domain=None, subdomain=None):
     from bench_manager.bench_manager.utils import run_command
     run_command(commands=commands,doctype="Bench Settings",key=key)
     sync_sites()
     site = frappe.get_doc("Site",site_name)
+    
+    # Set domain parameters if provided
+    if site_domain:
+        site.site_domain = site_domain
+    if subdomain:
+        site.subdomain = subdomain.lower()
+    
     if site.developer_flag == 1:
             site.update_app_list()
     site.save()

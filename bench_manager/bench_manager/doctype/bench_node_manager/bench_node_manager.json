@@ -1,0 +1,814 @@
+{
+ "actions": [],
+ "creation": "2017-08-28 16:04:38.088230",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "details_tab",
+  "node_bench_actions",
+  "add_site_btn",
+  "delete_site_btn",
+  "column_break_pfrm",
+  "clear_cache_btn",
+  "test_ssh_websocket_btn",
+  "column_break_fuhc",
+  "add_app_btn",
+  "install_app_btn",
+  "column_break_yamx",
+  "remove_app_btn",
+  "uninstall_app_btn",
+  "node_type_section",
+  "node_type",
+  "column_break_ocfx",
+  "node_name",
+  "column_break_vzwy",
+  "node_id",
+  "column_break_itom",
+  "server_ip",
+  "column_break_yhry",
+  "ssh_port",
+  "section_break_duee",
+  "discover_benches",
+  "column_break_hczp",
+  "bench_status_btn",
+  "column_break_vsal",
+  "restart_bench_btn",
+  "column_break_aefv",
+  "update_bench_btn",
+  "column_break_abqt",
+  "ping_remote_bench_btn",
+  "section_break_bench",
+  "status",
+  "last_sync",
+  "last_connected",
+  "bench_path",
+  "column_break_status",
+  "ssh_auth_method",
+  "generate_remote_key_pair",
+  "ssh_password",
+  "ssh_user",
+  "remote_ssh_private_key",
+  "remote_ssh_public_key",
+  "general_settings_tab",
+  "general_settings",
+  "local_server_ip",
+  "auto_email_id",
+  "global_help_setup",
+  "gunicorn_workers",
+  "rebase_on_pull",
+  "use_tls",
+  "restart_supervisor_on_update",
+  "section_break_36",
+  "background_workers",
+  "frappe_user",
+  "auto_update",
+  "serve_default_site",
+  "update_bench_on_update",
+  "password_settings_tab",
+  "password_settings",
+  "admin_password",
+  "password_root",
+  "column_break_16",
+  "mysql_root_password",
+  "tab_4_tab",
+  "dropbox_settings",
+  "allow_dropbox_access",
+  "send_notifications_to",
+  "send_email_for_successful_backup",
+  "file_backup",
+  "section_break_38",
+  "app_access_key",
+  "app_secret_key",
+  "dropbox_access_token",
+  "dropbox_access_key",
+  "dropbox_access_secret",
+  "tab_5_tab",
+  "github_settings",
+  "github_username",
+  "shallow_clone",
+  "section_break_37",
+  "github_password",
+  "git_user_email",
+  "ssh_settings_section",
+  "use_ssh_for_git",
+  "ssh_key_generated",
+  "ssh_column_break",
+  "github_connection_status",
+  "ssh_public_key_git",
+  "ssh_private_key_git",
+  "tab_7_tab",
+  "mail_settings",
+  "mail_port",
+  "mail_server",
+  "column_break_30",
+  "mail_password",
+  "mail_login",
+  "tab_8_tab",
+  "redis_and_ports",
+  "redis_socketio",
+  "redis_queue",
+  "redis_cache",
+  "sites_html",
+  "apps_html",
+  "column_break_31",
+  "socketio_port",
+  "webserver_port",
+  "file_watcher_port",
+  "last_sync_timestamp",
+  "frappe_git_branch",
+  "remote_sites_tab",
+  "sync_remote_sites",
+  "remote_sites"
+ ],
+ "fields": [
+  {
+   "fieldname": "node_type_section",
+   "fieldtype": "Section Break",
+   "label": "Node Type"
+  },
+  {
+   "default": "Local Node",
+   "fieldname": "node_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Node Type",
+   "options": "Local Node\nRemote Node",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "node_name",
+   "fieldtype": "Data",
+   "label": "Node Name",
+   "reqd": 1,
+   "set_only_once": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "node_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Node ID",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "server_ip",
+   "fieldtype": "Data",
+   "label": "Server IP / Hostname",
+   "mandatory_depends_on": "eval:doc.node_type == 'Remote Node'",
+   "set_only_once": 1
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "ssh_user",
+   "fieldtype": "Data",
+   "label": "SSH User",
+   "mandatory_depends_on": "eval:doc.node_type == 'Remote Node'"
+  },
+  {
+   "default": "22",
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "ssh_port",
+   "fieldtype": "Int",
+   "label": "SSH Port"
+  },
+  {
+   "default": "Private Key",
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "ssh_auth_method",
+   "fieldtype": "Select",
+   "label": "SSH Authentication Method",
+   "mandatory_depends_on": "eval:doc.node_type == 'Remote Node'",
+   "options": "Private Key\nPassword"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node' && doc.ssh_auth_method == 'Private Key'",
+   "description": "Paste your private key for connecting to remote server, or click 'Generate' to create new key pair",
+   "fieldname": "remote_ssh_private_key",
+   "fieldtype": "Password",
+   "label": "Remote SSH Private Key",
+   "mandatory_depends_on": "eval:doc.node_type == 'Remote Node' && doc.ssh_auth_method == 'Private Key'"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node' && doc.ssh_auth_method == 'Private Key'",
+   "description": "Add this public key to remote server's ~/.ssh/authorized_keys",
+   "fieldname": "remote_ssh_public_key",
+   "fieldtype": "Code",
+   "label": "Remote SSH Public Key",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node' && doc.ssh_auth_method == 'Private Key'",
+   "fieldname": "generate_remote_key_pair",
+   "fieldtype": "Button",
+   "label": "Generate Remote SSH Key Pair"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node' && doc.ssh_auth_method == 'Password'",
+   "fieldname": "ssh_password",
+   "fieldtype": "Password",
+   "label": "SSH Password",
+   "mandatory_depends_on": "eval:doc.node_type == 'Remote Node' && doc.ssh_auth_method == 'Password'"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "section_break_bench",
+   "fieldtype": "Section Break",
+   "label": "Remote Bench Server & SSH Configuration"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "description": "Absolute path to bench on remote server (e.g., /home/user/frappe-bench)",
+   "fieldname": "bench_path",
+   "fieldtype": "Data",
+   "label": "Bench Path",
+   "mandatory_depends_on": "eval:doc.node_type == 'Remote Node'",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "column_break_status",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "description": "Run bench doctor to check scheduler status and worker health",
+   "fieldname": "discover_benches",
+   "fieldtype": "Button",
+   "label": "Bench Doctor"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "ping_remote_bench_btn",
+   "fieldtype": "Button",
+   "label": "Ping Remote Bench"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "bench_status_btn",
+   "fieldtype": "Button",
+   "label": "Bench Status"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "restart_bench_btn",
+   "fieldtype": "Button",
+   "label": "Restart Bench"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "update_bench_btn",
+   "fieldtype": "Button",
+   "label": "Update Bench"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "clear_cache_btn",
+   "fieldtype": "Button",
+   "label": "Clear Cache"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "add_site_btn",
+   "fieldtype": "Button",
+   "label": "Add Site"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "add_app_btn",
+   "fieldtype": "Button",
+   "label": "Add App"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "install_app_btn",
+   "fieldtype": "Button",
+   "label": "Install App"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "delete_site_btn",
+   "fieldtype": "Button",
+   "label": "Delete Site"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "uninstall_app_btn",
+   "fieldtype": "Button",
+   "label": "Uninstall App"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "remove_app_btn",
+   "fieldtype": "Button",
+   "label": "Remove App"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "test_ssh_websocket_btn",
+   "fieldtype": "Button",
+   "label": "Test SSH WebSocket"
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "last_connected",
+   "fieldtype": "Datetime",
+   "label": "Last Connected",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "last_sync",
+   "fieldtype": "Datetime",
+   "label": "Last Sync",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Local Node'",
+   "fieldname": "frappe_user",
+   "fieldtype": "Data",
+   "label": "Frappe User",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Local Node'",
+   "fieldname": "frappe_git_branch",
+   "fieldtype": "Data",
+   "label": "Frappe Git Branch",
+   "read_only": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "depends_on": "eval:doc.node_type == 'Local Node'",
+   "description": "Server's public IP address for DNS configuration",
+   "fieldname": "local_server_ip",
+   "fieldtype": "Data",
+   "label": "Server IP Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "general_settings",
+   "fieldtype": "Section Break",
+   "label": "General Settings"
+  },
+  {
+   "fieldname": "background_workers",
+   "fieldtype": "Int",
+   "label": "Background Workers",
+   "read_only": 1
+  },
+  {
+   "fieldname": "auto_email_id",
+   "fieldtype": "Data",
+   "label": "Auto Email ID"
+  },
+  {
+   "fieldname": "global_help_setup",
+   "fieldtype": "Data",
+   "label": "Global Help Setup"
+  },
+  {
+   "fieldname": "gunicorn_workers",
+   "fieldtype": "Int",
+   "label": "Gunicorn Workers",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_36",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "auto_update",
+   "fieldtype": "Check",
+   "label": "Auto Update"
+  },
+  {
+   "default": "0",
+   "fieldname": "use_tls",
+   "fieldtype": "Check",
+   "label": "Use TLS"
+  },
+  {
+   "default": "0",
+   "fieldname": "rebase_on_pull",
+   "fieldtype": "Check",
+   "label": "Rebase On Pull"
+  },
+  {
+   "default": "0",
+   "fieldname": "restart_supervisor_on_update",
+   "fieldtype": "Check",
+   "label": "Restart Supervisor On Update"
+  },
+  {
+   "default": "0",
+   "fieldname": "serve_default_site",
+   "fieldtype": "Check",
+   "label": "Serve Default Site"
+  },
+  {
+   "default": "0",
+   "fieldname": "update_bench_on_update",
+   "fieldtype": "Check",
+   "label": "Update Bench On Update"
+  },
+  {
+   "fieldname": "password_settings",
+   "fieldtype": "Section Break",
+   "label": "Password Settings"
+  },
+  {
+   "description": "Default password for new site administrators",
+   "fieldname": "admin_password",
+   "fieldtype": "Password",
+   "label": "Default Admin Password"
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "MySQL/MariaDB root password for site operations",
+   "fieldname": "mysql_root_password",
+   "fieldtype": "Password",
+   "label": "MySQL Root Password"
+  },
+  {
+   "fieldname": "dropbox_settings",
+   "fieldtype": "Section Break",
+   "label": "Dropbox Settings"
+  },
+  {
+   "fieldname": "section_break_38",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dropbox_access_key",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "Dropbox Access Key"
+  },
+  {
+   "fieldname": "github_settings",
+   "fieldtype": "Section Break",
+   "label": "Github Settings"
+  },
+  {
+   "description": "Your GitHub username (e.g., amitascra)",
+   "fieldname": "github_username",
+   "fieldtype": "Data",
+   "label": "GitHub Username"
+  },
+  {
+   "default": "0",
+   "description": "Enable faster cloning with less disk space (recommended for production)",
+   "fieldname": "shallow_clone",
+   "fieldtype": "Check",
+   "label": "Shallow Clone"
+  },
+  {
+   "fieldname": "section_break_37",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "GitHub Personal Access Token (PAT) - Generate at github.com/settings/tokens",
+   "fieldname": "github_password",
+   "fieldtype": "Password",
+   "label": "GitHub Token (PAT)"
+  },
+  {
+   "description": "Your email for git commits (e.g., amit@example.com)",
+   "fieldname": "git_user_email",
+   "fieldtype": "Data",
+   "label": "Git User Email"
+  },
+  {
+   "fieldname": "ssh_settings_section",
+   "fieldtype": "Section Break",
+   "label": "GitHub SSH Configuration"
+  },
+  {
+   "default": "1",
+   "description": "Use SSH keys for GitHub git operations (recommended for security)",
+   "fieldname": "use_ssh_for_git",
+   "fieldtype": "Check",
+   "label": "Use SSH for GitHub Git"
+  },
+  {
+   "default": "0",
+   "description": "Indicates if GitHub SSH keys have been generated",
+   "fieldname": "ssh_key_generated",
+   "fieldtype": "Check",
+   "label": "GitHub SSH Keys Generated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ssh_column_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "GitHub SSH connection status",
+   "fieldname": "github_connection_status",
+   "fieldtype": "Data",
+   "label": "GitHub Connection Status",
+   "read_only": 1
+  },
+  {
+   "description": "GitHub SSH public key - Add this to your GitHub account's SSH keys",
+   "fieldname": "ssh_public_key_git",
+   "fieldtype": "Long Text",
+   "label": "GitHub SSH Public Key",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ssh_private_key_git",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "GitHub SSH Private Key"
+  },
+  {
+   "fieldname": "mail_settings",
+   "fieldtype": "Section Break",
+   "label": "Mail Settings"
+  },
+  {
+   "fieldname": "mail_port",
+   "fieldtype": "Data",
+   "label": "Mail Port"
+  },
+  {
+   "fieldname": "mail_server",
+   "fieldtype": "Data",
+   "label": "Mail Server"
+  },
+  {
+   "fieldname": "column_break_30",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mail_password",
+   "fieldtype": "Password",
+   "label": "Mail Password"
+  },
+  {
+   "fieldname": "mail_login",
+   "fieldtype": "Data",
+   "label": "Mail Login"
+  },
+  {
+   "fieldname": "redis_and_ports",
+   "fieldtype": "Section Break",
+   "label": "Redis and Ports"
+  },
+  {
+   "fieldname": "redis_socketio",
+   "fieldtype": "Data",
+   "label": "Redis Socketio"
+  },
+  {
+   "fieldname": "redis_queue",
+   "fieldtype": "Data",
+   "label": "Redis Queue"
+  },
+  {
+   "fieldname": "redis_cache",
+   "fieldtype": "Data",
+   "label": "Redis Cache"
+  },
+  {
+   "fieldname": "column_break_31",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "socketio_port",
+   "fieldtype": "Int",
+   "label": "Socketio Port",
+   "read_only": 1
+  },
+  {
+   "fieldname": "webserver_port",
+   "fieldtype": "Int",
+   "label": "Webserver Port",
+   "read_only": 1
+  },
+  {
+   "fieldname": "file_watcher_port",
+   "fieldtype": "Int",
+   "label": "File Watcher Port",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "last_sync_timestamp",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Last Sync Timestamp",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "allow_dropbox_access",
+   "fieldtype": "Button",
+   "label": "Allow Dropbox Access"
+  },
+  {
+   "fieldname": "app_access_key",
+   "fieldtype": "Data",
+   "label": "App Access Key"
+  },
+  {
+   "fieldname": "app_secret_key",
+   "fieldtype": "Password",
+   "label": "App Secret Key"
+  },
+  {
+   "fieldname": "dropbox_access_token",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "Dropbox Access Token"
+  },
+  {
+   "fieldname": "dropbox_access_secret",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "Dropbox Access Secret"
+  },
+  {
+   "fieldname": "send_notifications_to",
+   "fieldtype": "Data",
+   "label": "Send Notifications To"
+  },
+  {
+   "default": "0",
+   "fieldname": "send_email_for_successful_backup",
+   "fieldtype": "Check",
+   "label": "Send Email For Successful Backup"
+  },
+  {
+   "default": "0",
+   "fieldname": "file_backup",
+   "fieldtype": "Check",
+   "label": "File Backup"
+  },
+  {
+   "fieldname": "password_root",
+   "fieldtype": "Password",
+   "label": "Password Root"
+  },
+  {
+   "fieldname": "general_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "General Settings"
+  },
+  {
+   "fieldname": "password_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "Password Settings"
+  },
+  {
+   "fieldname": "tab_4_tab",
+   "fieldtype": "Tab Break",
+   "label": "Dropbox Settings"
+  },
+  {
+   "fieldname": "tab_5_tab",
+   "fieldtype": "Tab Break",
+   "label": "Github Settings"
+  },
+  {
+   "fieldname": "tab_7_tab",
+   "fieldtype": "Tab Break",
+   "label": "Mail Settings"
+  },
+  {
+   "fieldname": "tab_8_tab",
+   "fieldtype": "Tab Break",
+   "label": "Redis and Ports"
+  },
+  {
+   "fieldname": "sites_html",
+   "fieldtype": "HTML",
+   "label": "Sites",
+   "read_only": 1
+  },
+  {
+   "fieldname": "apps_html",
+   "fieldtype": "HTML",
+   "label": "Apps",
+   "read_only": 1
+  },
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "column_break_pfrm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_duee",
+   "fieldtype": "Section Break",
+   "label": "Remote Bench Actions"
+  },
+  {
+   "fieldname": "column_break_hczp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vsal",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "node_bench_actions",
+   "fieldtype": "Section Break",
+   "label": "Node Bench Actions"
+  },
+  {
+   "fieldname": "column_break_fuhc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_yamx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ocfx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vzwy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_itom",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_yhry",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_aefv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_abqt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Disconnected",
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Connected\nDisconnected\nError",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.node_type == 'Remote Node'",
+   "fieldname": "remote_sites_tab",
+   "fieldtype": "Tab Break",
+   "label": "Remote Sites"
+  },
+  {
+   "fieldname": "remote_sites",
+   "fieldtype": "Table",
+   "label": "Remote Sites",
+   "options": "Remote Site"
+  },
+  {
+   "fieldname": "sync_remote_sites",
+   "fieldtype": "Button",
+   "label": "Sync Remote Sites"
+  }
+ ],
+ "links": [],
+ "modified": "2026-05-16 03:59:55.037324",
+ "modified_by": "Administrator",
+ "module": "Bench Manager",
+ "name": "Bench Node Manager",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
