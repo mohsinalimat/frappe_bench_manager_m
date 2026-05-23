@@ -1,1 +1,0 @@
-@keyframes float{0%,to{transform:translateY(0) rotate(0)}50%{transform:translateY(-20px) rotate(5deg)}}.animate-float{animation:float 6s ease-in-out infinite}.perspective-1000{perspective:1000px}@keyframes fade-in-4622c0a4{0%{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.animate-fade-in[data-v-4622c0a4]{animation:fade-in-4622c0a4 .8s ease-out}

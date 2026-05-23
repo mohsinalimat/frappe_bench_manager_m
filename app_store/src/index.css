@@ -1,5 +1,0 @@
-@import "./assets/Inter/inter.css";
-@import "../node_modules/frappe-ui/src/style.css";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
