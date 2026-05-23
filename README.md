@@ -1,14 +1,13 @@
 # Bench Manager
 
 <div align="center">
-  <img src="bench_manager/public/images/fa-gamepad.svg" width="200" alt="Bench Manager Logo">
-  
+  <h1>Bench Manager</h1>
   <h3>Enterprise-Grade Frappe Ecosystem Management Platform</h3>
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
   [![Frappe](https://img.shields.io/badge/Frappe-Framework-orange.svg)](https://frappeframework.com)
   [![Vue 3](https://img.shields.io/badge/Vue-3-42b883.svg)](https://vuejs.org)
-  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/amitascra/frappe-worf-bench/pulls)
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/amitascra/frappe_bench_manager/pulls)
 </div>
 
 ---
