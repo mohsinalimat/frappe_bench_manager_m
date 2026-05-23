@@ -46,8 +46,8 @@
   "column_break_status",
   "ssh_auth_method",
   "generate_remote_key_pair",
-  "ssh_password",
   "ssh_user",
+  "ssh_password",
   "remote_ssh_private_key",
   "remote_ssh_public_key",
   "general_settings_tab",
@@ -119,7 +119,9 @@
   "frappe_git_branch",
   "remote_sites_tab",
   "sync_remote_sites",
-  "remote_sites"
+  "remote_sites",
+  "system_overview_tab",
+  "node_overview_html"
  ],
  "fields": [
   {
@@ -785,10 +787,21 @@
    "fieldname": "sync_remote_sites",
    "fieldtype": "Button",
    "label": "Sync Remote Sites"
+  },
+  {
+   "fieldname": "node_overview_html",
+   "fieldtype": "HTML",
+   "label": "System Monitoring",
+   "options": "<div id=\"node-overview-container\"></div>"
+  },
+  {
+   "fieldname": "system_overview_tab",
+   "fieldtype": "Tab Break",
+   "label": "System Overview"
   }
  ],
  "links": [],
- "modified": "2026-05-16 03:59:55.037324",
+ "modified": "2026-05-22 18:49:28.687576",
  "modified_by": "Administrator",
  "module": "Bench Manager",
  "name": "Bench Node Manager",

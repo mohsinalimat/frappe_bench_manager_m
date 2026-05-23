@@ -16,6 +16,7 @@ import traceback
 import dropbox
 import frappe
 import paramiko
+import psutil
 from frappe import _
 from frappe.integrations.offsite_backup_utils import (
 	get_chunk_site,
@@ -39,8 +40,129 @@ from bench_manager.bench_manager.utils import (
 	safe_decode,
 	verify_whitelisted_call,
 )
+import threading
 
 ignore_list = [".DS_Store"]
+
+# Global SSH connection pool
+_ssh_connection_pool = {}
+_pool_lock = threading.Lock()
+_pool_max_idle_time = 300  # 5 minutes
+
+
+class SSHConnectionPool:
+	"""Thread-safe SSH connection pool for bench_manager"""
+	
+	@staticmethod
+	def get_connection(doc):
+		"""Get or create SSH connection from pool"""
+		with _pool_lock:
+			pool_key = f"{doc.name}_{doc.server_ip}_{doc.ssh_port}"
+			
+			# Check if connection exists and is alive
+			if pool_key in _ssh_connection_pool:
+				conn_info = _ssh_connection_pool[pool_key]
+				ssh = conn_info['connection']
+				
+				# Check if connection is still alive
+				try:
+					transport = ssh.get_transport()
+					if transport and transport.is_active():
+						# Update last used time
+						conn_info['last_used'] = datetime.now()
+						frappe.logger().debug(f"Reusing SSH connection for {pool_key}")
+						return ssh
+					else:
+						# Connection dead, remove from pool
+						del _ssh_connection_pool[pool_key]
+				except:
+					# Connection error, remove from pool
+					if pool_key in _ssh_connection_pool:
+						del _ssh_connection_pool[pool_key]
+			
+			# Create new connection
+			ssh = doc._create_ssh_connection()
+			
+			# Store in pool
+			_ssh_connection_pool[pool_key] = {
+				'connection': ssh,
+				'created_at': datetime.now(),
+				'last_used': datetime.now(),
+				'doc_name': doc.name
+			}
+			
+			frappe.logger().info(f"Created new SSH connection for {pool_key}")
+			return ssh
+	
+	@staticmethod
+	def cleanup_idle_connections():
+		"""Remove idle connections from pool"""
+		with _pool_lock:
+			current_time = datetime.now()
+			idle_keys = []
+			
+			for pool_key, conn_info in _ssh_connection_pool.items():
+				idle_time = (current_time - conn_info['last_used']).total_seconds()
+				if idle_time > _pool_max_idle_time:
+					idle_keys.append(pool_key)
+			
+			for pool_key in idle_keys:
+				try:
+					_ssh_connection_pool[pool_key]['connection'].close()
+				except:
+					pass
+				del _ssh_connection_pool[pool_key]
+				frappe.logger().info(f"Cleaned up idle SSH connection: {pool_key}")
+			
+			return len(idle_keys)
+	
+	@staticmethod
+	def close_connection(doc):
+		"""Close specific connection"""
+		with _pool_lock:
+			pool_key = f"{doc.name}_{doc.server_ip}_{doc.ssh_port}"
+			if pool_key in _ssh_connection_pool:
+				try:
+					_ssh_connection_pool[pool_key]['connection'].close()
+				except:
+					pass
+				del _ssh_connection_pool[pool_key]
+				frappe.logger().info(f"Closed SSH connection: {pool_key}")
+				return True
+			return False
+	
+	@staticmethod
+	def close_all_connections():
+		"""Close all connections in pool"""
+		with _pool_lock:
+			for pool_key, conn_info in list(_ssh_connection_pool.items()):
+				try:
+					conn_info['connection'].close()
+				except:
+					pass
+			_ssh_connection_pool.clear()
+			frappe.logger().info("Closed all SSH connections")
+	
+	@staticmethod
+	def get_pool_stats():
+		"""Get connection pool statistics"""
+		with _pool_lock:
+			stats = {
+				'total_connections': len(_ssh_connection_pool),
+				'connections': []
+			}
+			
+			for pool_key, conn_info in _ssh_connection_pool.items():
+				idle_time = (datetime.now() - conn_info['last_used']).total_seconds()
+				stats['connections'].append({
+					'key': pool_key,
+					'doc_name': conn_info['doc_name'],
+					'created_at': str(conn_info['created_at']),
+					'last_used': str(conn_info['last_used']),
+					'idle_seconds': int(idle_time)
+				})
+			
+			return stats
 
 
 @frappe.whitelist()
@@ -142,7 +264,7 @@ def execute_remote_command(command, realtime_key=None, name=None, user=None):
 			output = stdout.read().decode()
 			error = stderr.read().decode()
 
-		ssh.close()
+		# Don't close - connection is pooled and reused
 		return {"success": True, "output": output, "error": error}
 
 	except Exception as e:
@@ -297,8 +419,8 @@ class BenchNodeManager(Document):
 		except Exception:
 			return None
 
-	def _get_ssh_connection(self):
-		"""Establish SSH connection based on auth method"""
+	def _create_ssh_connection(self):
+		"""Create new SSH connection based on auth method (called by pool)"""
 		ssh = paramiko.SSHClient()
 		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -314,6 +436,10 @@ class BenchNodeManager(Document):
 			ssh.connect(self.server_ip, port=self.ssh_port, username=self.ssh_user, password=password)
 
 		return ssh
+	
+	def _get_ssh_connection(self):
+		"""Get SSH connection from pool (reuses existing connections)"""
+		return SSHConnectionPool.get_connection(self)
 
 	@frappe.whitelist()
 	def generate_remote_key_pair(self):
@@ -373,7 +499,7 @@ class BenchNodeManager(Document):
 			output = stdout.read().decode()
 			error = stderr.read().decode()
 
-			ssh.close()
+			# Connection pooled - don't close
 			
 			return {"success": True, "output": output, "error": error}
 
@@ -399,7 +525,7 @@ class BenchNodeManager(Document):
 			output = stdout.read().decode()
 			error = stderr.read().decode()
 
-			ssh.close()
+			# Connection pooled - don't close
 			
 			return {"success": True, "output": output, "error": error}
 
@@ -423,7 +549,7 @@ class BenchNodeManager(Document):
 			sites = stdout.read().decode().strip().split("\n")
 			sites = [s for s in sites if s]  # Filter empty strings
 
-			ssh.close()
+			# Connection pooled - don't close
 			
 			return {"success": True, "sites": sites}
 
@@ -446,7 +572,7 @@ class BenchNodeManager(Document):
 			apps = stdout.read().decode().strip().split("\n")
 			apps = [a for a in apps if a]  # Filter empty strings
 
-			ssh.close()
+			# Connection pooled - don't close
 			
 			return {"success": True, "apps": apps}
 
@@ -466,21 +592,21 @@ class BenchNodeManager(Document):
 			output = stdout.read().decode().strip()
 
 			if output != "Connection successful":
-				ssh.close()
+				# Connection pooled - don't close
 				return {"success": False, "message": "SSH connection failed"}
 
 			if self.bench_path:
 				stdin, stdout, stderr = ssh.exec_command(f"test -d {self.bench_path} && echo 'EXISTS'")
 				if stdout.read().decode().strip() != "EXISTS":
-					ssh.close()
+					# Connection pooled - don't close
 					return {"success": False, "message": f"Bench path does not exist: {self.bench_path}"}
 
 				stdin, stdout, stderr = ssh.exec_command(f"test -f {self.bench_path}/apps.txt && echo 'VALID'")
 				if stdout.read().decode().strip() != "VALID":
-					ssh.close()
+					# Connection pooled - don't close
 					return {"success": False, "message": f"Path is not a valid Frappe bench: {self.bench_path}"}
 
-			ssh.close()
+			# Connection pooled - don't close
 			self.db_set("status", "Connected")
 			return {"success": True, "message": "Connection successful and bench verified"}
 
@@ -502,7 +628,7 @@ class BenchNodeManager(Document):
 			output = stdout.read().decode()
 			error = stderr.read().decode()
 			
-			ssh.close()
+			# Connection pooled - don't close
 			
 			if output and "Connection successful" in output:
 				# Update connection status and timestamp
@@ -553,7 +679,7 @@ class BenchNodeManager(Document):
 				site_doc.save()
 				sites_synced += 1
 
-			ssh.close()
+			# Connection pooled - don't close
 			self.db_set("last_sync", frappe.utils.now())
 
 			return {"success": True, "sites_synced": sites_synced}
@@ -651,7 +777,7 @@ class BenchNodeManager(Document):
 				sites_synced += 1
 
 			self.save()
-			ssh.close()
+			# Connection pooled - don't close
 			self.db_set("last_sync", frappe.utils.now())
 
 			message = f"Successfully synced {sites_synced} sites"
@@ -700,13 +826,242 @@ class BenchNodeManager(Document):
 				app_doc.save()
 				apps_synced += 1
 
-			ssh.close()
+			# Connection pooled - don't close
 			self.db_set("last_sync", frappe.utils.now())
 
 			return {"success": True, "apps_synced": apps_synced}
 
 		except Exception as e:
 			return {"success": False, "message": str(e)}
+
+	@frappe.whitelist()
+	def get_node_overview(self):
+		"""Get system monitoring overview for both Local and Remote nodes"""
+		try:
+			if self.node_type == "Local Node":
+				return self._get_local_node_overview()
+			else:
+				return self._get_remote_node_overview()
+		except Exception as e:
+			frappe.log_error(f"Node Overview Error: {str(e)}", "Node Overview")
+			return {"success": False, "message": str(e)}
+
+	def _get_local_node_overview(self):
+		"""Get system monitoring data for local node using psutil"""
+		try:
+			# System Info
+			import platform
+			import socket
+			
+			system_info = {
+				"hostname": socket.gethostname(),
+				"os": f"{platform.system()} {platform.release()}",
+				"architecture": platform.machine(),
+				"uptime": self._format_uptime(psutil.boot_time())
+			}
+			
+			# CPU Info
+			cpu_percent = psutil.cpu_percent(interval=1, percpu=True)
+			cpu_info = {
+				"usage_percent": round(psutil.cpu_percent(interval=0.5), 2),
+				"core_count": psutil.cpu_count(logical=False),
+				"thread_count": psutil.cpu_count(logical=True),
+				"per_core_usage": [round(p, 2) for p in cpu_percent],
+				"load_average": [round(x, 2) for x in psutil.getloadavg()]
+			}
+			
+			# Memory Info
+			mem = psutil.virtual_memory()
+			swap = psutil.swap_memory()
+			memory_info = {
+				"total_gb": round(mem.total / (1024**3), 2),
+				"used_gb": round(mem.used / (1024**3), 2),
+				"available_gb": round(mem.available / (1024**3), 2),
+				"percent": round(mem.percent, 2),
+				"swap_total_gb": round(swap.total / (1024**3), 2),
+				"swap_used_gb": round(swap.used / (1024**3), 2),
+				"swap_percent": round(swap.percent, 2)
+			}
+			
+			# Disk Info
+			disk_info = []
+			for partition in psutil.disk_partitions():
+				try:
+					usage = psutil.disk_usage(partition.mountpoint)
+					disk_info.append({
+						"device": partition.device,
+						"mountpoint": partition.mountpoint,
+						"fstype": partition.fstype,
+						"total_gb": round(usage.total / (1024**3), 2),
+						"used_gb": round(usage.used / (1024**3), 2),
+						"free_gb": round(usage.free / (1024**3), 2),
+						"percent": round(usage.percent, 2)
+					})
+				except:
+					pass
+			
+			# Top Processes by CPU
+			processes = []
+			for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent', 'username']):
+				try:
+					processes.append(proc.info)
+				except (psutil.NoSuchProcess, psutil.AccessDenied):
+					pass
+			
+			top_cpu = sorted(processes, key=lambda x: x.get('cpu_percent', 0), reverse=True)[:10]
+			top_memory = sorted(processes, key=lambda x: x.get('memory_percent', 0), reverse=True)[:10]
+			
+			# Bench Services Status (if supervisor is available)
+			bench_services = self._get_supervisor_status()
+			
+			return {
+				"success": True,
+				"node_type": "Local Node",
+				"system_info": system_info,
+				"cpu": cpu_info,
+				"memory": memory_info,
+				"disk": disk_info,
+				"top_cpu_processes": top_cpu,
+				"top_memory_processes": top_memory,
+				"bench_services": bench_services
+			}
+			
+		except Exception as e:
+			return {"success": False, "message": str(e)}
+
+	def _get_remote_node_overview(self):
+		"""Get system monitoring data for remote node via SSH"""
+		try:
+			ssh = self._get_ssh_connection()
+			
+			# System Info
+			stdin, stdout, stderr = ssh.exec_command("uname -a && uptime && hostname")
+			uname_output = stdout.read().decode().strip().split('\n')
+			
+			system_info = {
+				"hostname": uname_output[2] if len(uname_output) > 2 else "Unknown",
+				"os": uname_output[0] if len(uname_output) > 0 else "Unknown",
+				"uptime": uname_output[1] if len(uname_output) > 1 else "Unknown"
+			}
+			
+			# CPU Info
+			stdin, stdout, stderr = ssh.exec_command("nproc && cat /proc/loadavg && top -bn1 | grep 'Cpu(s)'")
+			cpu_output = stdout.read().decode().strip().split('\n')
+			
+			cpu_info = {
+				"core_count": int(cpu_output[0]) if cpu_output else 0,
+				"load_average": cpu_output[1].split()[:3] if len(cpu_output) > 1 else [],
+				"usage_info": cpu_output[2] if len(cpu_output) > 2 else ""
+			}
+			
+			# Memory Info
+			stdin, stdout, stderr = ssh.exec_command("free -g")
+			mem_output = stdout.read().decode().strip().split('\n')
+			
+			memory_info = {"raw_output": mem_output}
+			if len(mem_output) > 1:
+				mem_line = mem_output[1].split()
+				if len(mem_line) >= 3:
+					memory_info.update({
+						"total_gb": mem_line[1],
+						"used_gb": mem_line[2],
+						"free_gb": mem_line[3] if len(mem_line) > 3 else "0"
+					})
+			
+			# Disk Info
+			stdin, stdout, stderr = ssh.exec_command("df -h")
+			disk_output = stdout.read().decode().strip().split('\n')
+			
+			disk_info = []
+			for line in disk_output[1:]:  # Skip header
+				parts = line.split()
+				if len(parts) >= 6:
+					disk_info.append({
+						"filesystem": parts[0],
+						"size": parts[1],
+						"used": parts[2],
+						"available": parts[3],
+						"percent": parts[4],
+						"mountpoint": parts[5]
+					})
+			
+			# Top Processes by CPU
+			stdin, stdout, stderr = ssh.exec_command("ps aux --sort=-%cpu | head -11")
+			top_cpu_output = stdout.read().decode().strip().split('\n')
+			
+			# Top Processes by Memory
+			stdin, stdout, stderr = ssh.exec_command("ps aux --sort=-%mem | head -11")
+			top_mem_output = stdout.read().decode().strip().split('\n')
+			
+			# Bench Services Status
+			bench_services = []
+			if self.bench_path:
+				stdin, stdout, stderr = ssh.exec_command("sudo -n supervisorctl status all 2>/dev/null || echo 'No supervisor access'")
+				services_output = stdout.read().decode().strip()
+				bench_services = services_output.split('\n') if services_output else []
+			
+			return {
+				"success": True,
+				"node_type": "Remote Node",
+				"system_info": system_info,
+				"cpu": cpu_info,
+				"memory": memory_info,
+				"disk": disk_info,
+				"top_cpu_processes": top_cpu_output,
+				"top_memory_processes": top_mem_output,
+				"bench_services": bench_services
+			}
+			
+		except Exception as e:
+			return {"success": False, "message": str(e)}
+
+	def _format_uptime(self, boot_time):
+		"""Format uptime from boot timestamp"""
+		uptime_seconds = datetime.now().timestamp() - boot_time
+		days = int(uptime_seconds // 86400)
+		hours = int((uptime_seconds % 86400) // 3600)
+		minutes = int((uptime_seconds % 3600) // 60)
+		return f"{days}d {hours}h {minutes}m"
+
+	def _get_supervisor_status(self):
+		"""Get supervisor status for bench services"""
+		try:
+			result = check_output(['sudo', '-n', 'supervisorctl', 'status', 'all'], stderr=STDOUT)
+			services = []
+			for line in result.decode().strip().split('\n'):
+				if line:
+					services.append(line)
+			return services
+		except:
+			return []
+
+	@frappe.whitelist()
+	def reboot_node(self):
+		"""Reboot the node (local or remote)"""
+		try:
+			if self.node_type == "Local Node":
+				# Reboot local node
+				import subprocess
+				subprocess.Popen(['sudo', 'reboot', 'now'])
+				return {
+					"success": True,
+					"message": "Local node reboot initiated. System will restart shortly."
+				}
+			else:
+				# Reboot remote node via SSH
+				ssh = self._get_ssh_connection()
+				stdin, stdout, stderr = ssh.exec_command("sudo reboot now")
+				
+				return {
+					"success": True,
+					"message": "Remote node reboot initiated. System will restart shortly."
+				}
+		except Exception as e:
+			frappe.log_error(f"Reboot Node Error: {str(e)}", "Node Reboot")
+			return {
+				"success": False,
+				"message": f"Failed to reboot node: {str(e)}"
+			}
 
 	@frappe.whitelist()
 	def console_command(self, key, caller, app_name=None, branch_name=None, name=None, site_name=None, mysql_root_password=None, admin_password=None):
@@ -1738,225 +2093,59 @@ def generate_oauth2_access_token_from_oauth1_token(dropbox_settings=None):
 # SSH Connection Pool for AsyncSSH
 # ---------------------------------------------------------------------------
 
-import asyncio
-import threading
-from typing import Dict, Optional
-import asyncssh
-
-class SSHConnectionPool:
-	"""
-	Thread-safe SSH connection pool using AsyncSSH for better performance.
-	Manages connection reuse and cleanup for remote bench operations.
-	"""
-	_instance = None
-	_lock = threading.Lock()
-	
-	def __new__(cls):
-		if cls._instance is None:
-			with cls._lock:
-				if cls._instance is None:
-					cls._instance = super().__new__(cls)
-					cls._instance._connections = {}
-					cls._instance._connection_stats = {}
-					cls._instance._loop = asyncio.new_event_loop()
-					cls._instance._thread = threading.Thread(
-						target=cls._instance._run_event_loop,
-						daemon=True
-					)
-					cls._instance._thread.start()
-		return cls._instance
-	
-	def _run_event_loop(self):
-		"""Run the asyncio event loop in a separate thread."""
-		asyncio.set_event_loop(self._loop)
-		self._loop.run_forever()
-	
-	def get_connection(self, doc) -> asyncssh.SSHClientConnection:
-		"""
-		Get or create an SSH connection for the given document.
-		Returns an asyncssh connection object.
-		"""
-		key = self._get_connection_key(doc)
-		
-		# Check if connection exists and is healthy
-		if key in self._connections:
-			if self._is_connection_healthy(self._connections[key]):
-				self._connection_stats[key]['last_used'] = frappe.utils.now()
-				return self._connections[key]
-			else:
-				# Close unhealthy connection
-				self._close_connection(key)
-		
-		# Create new connection synchronously
-		conn = self._create_connection_sync(doc)
-		if conn:
-			self._connections[key] = conn
-			self._connection_stats[key] = {
-				'created': frappe.utils.now(),
-				'last_used': frappe.utils.now(),
-				'usage_count': 0
-			}
-		return conn
-	
-	def _create_connection_sync(self, doc) -> Optional[asyncssh.SSHClientConnection]:
-		"""Create SSH connection synchronously by running coroutine in event loop."""
-		async def _create():
-			try:
-				# Load SSH key
-				client_keys = []
-				if doc.ssh_auth_method == "SSH Key":
-					if doc.ssh_key_file:
-						client_keys.append(asyncssh.SSHKey.from_private_key_file(doc.ssh_key_file))
-					elif doc.ssh_private_key:
-						client_keys.append(asyncssh.SSHKey.from_private_key(doc.ssh_private_key))
-				
-				# Create connection
-				conn = await asyncio.wait_for(
-					asyncssh.connect(
-						doc.ssh_host,
-						port=doc.ssh_port or 22,
-						username=doc.ssh_user,
-						password=doc.ssh_password if doc.ssh_auth_method == "Password" else None,
-						client_keys=client_keys if client_keys else None,
-						known_hosts=None,  # For production, use proper host key verification
-						connect_timeout=30
-					),
-					timeout=30
-				)
-				return conn
-			except Exception as e:
-				frappe.log_error(f"SSH connection failed: {str(e)}", "SSH Connection Pool")
-				return None
-		
-		future = asyncio.run_coroutine_threadsafe(_create(), self._loop)
-		return future.result()
-	
-	def release_connection(self, doc):
-		"""Mark connection as released (update stats)."""
-		key = self._get_connection_key(doc)
-		if key in self._connection_stats:
-			self._connection_stats[key]['usage_count'] += 1
-	
-	def _get_connection_key(self, doc):
-		"""Generate unique key for connection based on host, port, and user."""
-		return f"{doc.ssh_host}:{doc.ssh_port or 22}:{doc.ssh_user}"
-	
-	def _is_connection_healthy(self, conn) -> bool:
-		"""Check if SSH connection is still active."""
-		if not conn:
-			return False
-		try:
-			# AsyncSSH connection has is_closing() method
-			return not conn.is_closing()
-		except:
-			return False
-	
-	def _close_connection(self, key):
-		"""Close and remove a connection from the pool."""
-		if key in self._connections:
-			try:
-				async def _close():
-					self._connections[key].close()
-					await self._connections[key].wait_closed()
-				
-				asyncio.run_coroutine_threadsafe(_close(), self._loop)
-			except:
-				pass
-			del self._connections[key]
-		if key in self._connection_stats:
-			del self._connection_stats[key]
-	
-	def cleanup_idle_connections(self, idle_timeout=300):
-		"""Close connections idle for more than the specified timeout (default: 5 minutes)."""
-		now = frappe.utils.now()
-		for key, stats in list(self._connection_stats.items()):
-			last_used = stats.get('last_used')
-			if last_used and (now - last_used).total_seconds() > idle_timeout:
-				self._close_connection(key)
-	
-	def close_all(self):
-		"""Close all connections in the pool."""
-		for key in list(self._connections.keys()):
-			self._close_connection(key)
-
-
-# Global SSH connection pool instance
-ssh_pool = SSHConnectionPool()
-
-
 # ---------------------------------------------------------------------------
 # WebSocket Handler for Real-time SSH Terminal
 # ---------------------------------------------------------------------------
 
 @frappe.whitelist()
-def execute_ssh_command_websocket(name: str, command: str, websocket_key: str):
-	"""
-	Execute SSH command and stream output via Frappe's realtime system.
-	This provides real-time output without WebSocket server complexity.
-	
-	Args:
-		name: Bench Node Manager document name
-		command: Command to execute
-		websocket_key: Key for Frappe's realtime publish
-	"""
-	doc = frappe.get_doc("Bench Node Manager", name)
-	
-	if doc.node_type != "Remote Node":
-		return {"success": False, "message": "Only Remote Nodes can execute commands"}
-	
-	try:
-		# Use connection pool
-		conn = ssh_pool.get_connection(doc)
-		if not conn:
-			return {"success": False, "message": "Failed to establish SSH connection"}
-		
-		# Execute command with real-time streaming
-		async def _execute_command():
-			try:
-				full_command = f"cd {doc.bench_path} && {command}"
-				
-				# Create SSH session
-				async with conn.create_process(
-					full_command,
-					term_type='xterm-256color',
-					encoding='utf-8'
-				) as process:
-					# Stream stdout
-					async for line in process.stdout:
-						if line:
-							frappe.publish_realtime(websocket_key, line, user=frappe.session.user)
-					
-					# Stream stderr
-					async for line in process.stderr:
-						if line:
-							frappe.publish_realtime(websocket_key, f"ERROR: {line}", user=frappe.session.user)
-					
-					# Wait for process to complete
-					exit_status = await process.wait()
-					
-					return {
-						"success": True,
-						"exit_status": exit_status.exit_status
-					}
-			except Exception as e:
-				return {"success": False, "message": str(e)}
-		
-		# Run the async command in the event loop
-		future = asyncio.run_coroutine_threadsafe(_execute_command(), ssh_pool._loop)
-		result = future.result(timeout=300)  # 5 minute timeout
-		
-		ssh_pool.release_connection(doc)
-		return result
-
-	except Exception as e:
-		doc.db_set("status", "Error")
-		return {"success": False, "message": str(e)}
+def cleanup_idle_ssh_connections():
+	"""Scheduled job to cleanup idle SSH connections."""
+	SSHConnectionPool.cleanup_idle_connections()
 
 
 @frappe.whitelist()
-def cleanup_idle_ssh_connections():
-	"""Scheduled job to cleanup idle SSH connections."""
-	ssh_pool.cleanup_idle_connections()
+def cleanup_ssh_pool():
+	"""Cleanup idle SSH connections from pool"""
+	verify_whitelisted_call()
+	cleaned = SSHConnectionPool.cleanup_idle_connections()
+	return {
+		"success": True,
+		"message": f"Cleaned up {cleaned} idle connections",
+		"cleaned_count": cleaned
+	}
+
+
+@frappe.whitelist()
+def get_ssh_pool_stats():
+	"""Get SSH connection pool statistics"""
+	verify_whitelisted_call()
+	return {
+		"success": True,
+		"stats": SSHConnectionPool.get_pool_stats()
+	}
+
+
+@frappe.whitelist()
+def close_ssh_connection(name=None):
+	"""Close SSH connection for specific node"""
+	verify_whitelisted_call()
+	doc = _get_bench_node_doc(name)
+	closed = SSHConnectionPool.close_connection(doc)
+	return {
+		"success": closed,
+		"message": "Connection closed" if closed else "No active connection found"
+	}
+
+
+@frappe.whitelist()
+def close_all_ssh_connections():
+	"""Close all SSH connections in pool"""
+	verify_whitelisted_call()
+	SSHConnectionPool.close_all_connections()
+	return {
+		"success": True,
+		"message": "All SSH connections closed"
+	}
 
 
 @frappe.whitelist()
@@ -1978,46 +2167,23 @@ def test_ssh_websocket_connection(name: str):
 	
 	try:
 		# Test connection pool
-		conn = ssh_pool.get_connection(doc)
-		if not conn:
-			return {
-				"success": False,
-				"message": "Failed to establish SSH connection via connection pool"
-			}
+		ssh = doc._get_ssh_connection()
 		
 		# Test simple command
-		async def _test_command():
-			try:
-				result = await conn.run("echo 'SSH Connection Test Successful'", check=False)
-				return {
-					"success": True,
-					"stdout": result.stdout,
-					"stderr": result.stderr,
-					"exit_status": result.exit_status
-				}
-			except Exception as e:
-				return {
-					"success": False,
-					"error": str(e)
-				}
+		stdin, stdout, stderr = ssh.exec_command("echo 'SSH Connection Test Successful'")
+		output = stdout.read().decode().strip()
+		error = stderr.read().decode().strip()
 		
-		future = asyncio.run_coroutine_threadsafe(_test_command(), ssh_pool._loop)
-		result = future.result(timeout=30)
+		# Get pool stats
+		pool_stats = SSHConnectionPool.get_pool_stats()
 		
-		ssh_pool.release_connection(doc)
-		
-		if result["success"]:
-			return {
-				"success": True,
-				"message": "SSH Connection Pool Test Successful",
-				"output": result["stdout"],
-				"pool_stats": ssh_pool._connection_stats
-			}
-		else:
-			return {
-				"success": False,
-				"message": f"SSH command failed: {result.get('error', 'Unknown error')}"
-			}
+		return {
+			"success": True,
+			"message": "SSH Connection Pool Test Successful",
+			"output": output,
+			"error": error if error else None,
+			"pool_stats": pool_stats
+		}
 		
 	except Exception as e:
 		doc.db_set("status", "Error")

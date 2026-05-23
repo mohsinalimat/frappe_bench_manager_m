@@ -27,6 +27,21 @@ frappe.ui.form.on('Bench Node Manager', {
 			frm.set_value('status', 'Connected');
 		}
 
+		// === NODE OVERVIEW AUTO-REFRESH ===
+		if (!frm.doc.__islocal) {
+			load_node_overview(frm);
+			
+			// Auto-refresh every 10 seconds
+			if (frm.node_overview_interval) {
+				clearInterval(frm.node_overview_interval);
+			}
+			frm.node_overview_interval = setInterval(() => {
+				if (frm.doc && !frm.is_dirty()) {
+					load_node_overview(frm);
+				}
+			}, 10000);
+		}
+
 		// === BENCH OPERATIONS GROUP (Local Node Only) ===
 		if (frm.doc.node_type === 'Local Node') {
 			frm.add_custom_button(__("Install App"), function(){
@@ -1902,6 +1917,349 @@ frappe.ui.form.on('Bench Node Manager', {
 		});
 	}
 });
+
+// Node Overview HTML Field Function
+function load_node_overview(frm) {
+	frappe.call({
+		method: 'get_node_overview',
+		doc: frm.doc,
+		callback: function(r) {
+			if (r.message && r.message.success) {
+				const data = r.message;
+				let html = generate_overview_html(data, frm);
+				
+				// Populate the HTML field
+				frm.fields_dict.node_overview_html.$wrapper.html(html);
+				
+				// Setup tab switching after HTML is rendered
+				setup_tab_switching_field(frm);
+			} else {
+				frm.fields_dict.node_overview_html.$wrapper.html(
+					`<div class="alert alert-danger">
+						<strong>Error:</strong> ${r.message ? r.message.message : 'Failed to fetch node overview'}
+					</div>`
+				);
+			}
+		}
+	});
+}
+
+// Setup tab switching functionality for HTML field
+function setup_tab_switching_field(frm) {
+	setTimeout(() => {
+		frm.fields_dict.node_overview_html.$wrapper.find('[data-tab]').off('click').on('click', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			const targetTab = $(this).attr('data-tab');
+			
+			// Remove active class from all tabs and hide all panes
+			frm.fields_dict.node_overview_html.$wrapper.find('.nav-link').removeClass('active');
+			frm.fields_dict.node_overview_html.$wrapper.find('.tab-pane-custom').hide();
+			
+			// Add active class to clicked tab and show corresponding pane
+			$(this).addClass('active');
+			frm.fields_dict.node_overview_html.$wrapper.find('#' + targetTab).show();
+		});
+	}, 100);
+}
+
+// Function to generate HTML from overview data
+function generate_overview_html(data, frm) {
+	let html = `
+		<div style="padding: 15px;">
+			<!-- Auto-refresh controls -->
+			<div class="frappe-control" style="margin-bottom: 20px; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
+				<div>
+					<span style="color: var(--text-muted);">
+						<i class="fa fa-clock-o"></i> Auto-refreshing every 10 seconds
+					</span>
+				</div>
+				<div>
+					<button class="btn btn-sm btn-danger" onclick="reboot_node_action('${frm.doc.name}')">
+						<i class="fa fa-power-off"></i> Reboot Node
+					</button>
+				</div>
+			</div>
+
+				<!-- System Information -->
+				<div class="row">
+					<div class="col-md-12">
+						<h4><i class="fa fa-server"></i> System Information</h4>
+						<table class="table table-bordered table-sm">
+							<tr><th width="200">Node Type</th><td><span class="badge badge-info">${data.node_type}</span></td></tr>
+							<tr><th>Hostname</th><td>${data.system_info.hostname || 'N/A'}</td></tr>
+							<tr><th>Operating System</th><td>${data.system_info.os || 'N/A'}</td></tr>
+							${data.system_info.architecture ? `<tr><th>Architecture</th><td>${data.system_info.architecture}</td></tr>` : ''}
+							<tr><th>Uptime</th><td>${data.system_info.uptime || 'N/A'}</td></tr>
+						</table>
+					</div>
+				</div>
+
+				<!-- CPU & Memory -->
+				<div class="row" style="margin-top: 20px;">
+					<div class="col-md-6">
+						<h4><i class="fa fa-microchip"></i> CPU</h4>
+						${generate_cpu_html(data.cpu, data.node_type)}
+					</div>
+					<div class="col-md-6">
+						<h4><i class="fa fa-memory"></i> Memory</h4>
+						${generate_memory_html(data.memory, data.node_type)}
+					</div>
+				</div>
+
+				<!-- Disk Usage -->
+				<div class="row" style="margin-top: 20px;">
+					<div class="col-md-12">
+						<h4><i class="fa fa-hdd-o"></i> Disk Usage</h4>
+						${generate_disk_html(data.disk, data.node_type)}
+					</div>
+				</div>
+
+				<!-- Top Processes -->
+				<div class="row" style="margin-top: 20px;">
+					<div class="col-md-12">
+						<h4><i class="fa fa-list"></i> Top Processes</h4>
+						<ul class="nav nav-tabs" role="tablist" style="margin-bottom: 15px;" id="process-tabs">
+							<li class="nav-item">
+								<a class="nav-link active" data-tab="cpu-processes" role="tab" style="cursor: pointer;">
+									<i class="fa fa-bolt"></i> Top CPU Processes
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-tab="memory-processes" role="tab" style="cursor: pointer;">
+									<i class="fa fa-database"></i> Top Memory Processes
+								</a>
+							</li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane-custom active" id="cpu-processes" role="tabpanel">
+								${generate_processes_html(data.top_cpu_processes, 'cpu', data.node_type)}
+							</div>
+							<div class="tab-pane-custom" id="memory-processes" role="tabpanel" style="display: none;">
+								${generate_processes_html(data.top_memory_processes, 'memory', data.node_type)}
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Bench Services -->
+				${data.bench_services && data.bench_services.length > 0 ? `
+				<div class="row" style="margin-top: 20px;">
+					<div class="col-md-12">
+						<h4><i class="fa fa-cogs"></i> Bench Services</h4>
+						${generate_services_html(data.bench_services)}
+					</div>
+				</div>
+				` : ''}
+			</div>
+		`;
+		return html;
+	}
+
+	// Generate CPU HTML
+	function generate_cpu_html(cpu, node_type) {
+		if (node_type === 'Local Node') {
+			return `
+				<table class="table table-bordered table-sm">
+					<tr><th width="200">Usage</th><td>
+						<div class="progress" style="height: 25px;">
+							<div class="progress-bar ${cpu.usage_percent > 80 ? 'bg-danger' : cpu.usage_percent > 60 ? 'bg-warning' : 'bg-success'}" 
+								style="width: ${cpu.usage_percent}%">${cpu.usage_percent}%</div>
+						</div>
+					</td></tr>
+					<tr><th>Cores / Threads</th><td>${cpu.core_count} cores / ${cpu.thread_count} threads</td></tr>
+					<tr><th>Load Average</th><td>${cpu.load_average.join(', ')}</td></tr>
+					<tr><th>Per-Core Usage</th><td>${cpu.per_core_usage.map((p, i) => `Core ${i}: ${p}%`).join(', ')}</td></tr>
+				</table>
+			`;
+		} else {
+			return `
+				<table class="table table-bordered table-sm">
+					<tr><th width="200">Cores</th><td>${cpu.core_count}</td></tr>
+					<tr><th>Load Average</th><td>${cpu.load_average.join(', ')}</td></tr>
+					<tr><th>Usage Info</th><td><code>${cpu.usage_info}</code></td></tr>
+				</table>
+			`;
+		}
+	}
+
+	// Generate Memory HTML
+	function generate_memory_html(memory, node_type) {
+		if (node_type === 'Local Node') {
+			return `
+				<table class="table table-bordered table-sm">
+					<tr><th width="200">RAM Usage</th><td>
+						<div class="progress" style="height: 25px;">
+							<div class="progress-bar ${memory.percent > 80 ? 'bg-danger' : memory.percent > 60 ? 'bg-warning' : 'bg-success'}" 
+								style="width: ${memory.percent}%">${memory.percent}%</div>
+						</div>
+					</td></tr>
+					<tr><th>Total / Used / Available</th><td>${memory.total_gb} GB / ${memory.used_gb} GB / ${memory.available_gb} GB</td></tr>
+					<tr><th>Swap Usage</th><td>
+						<div class="progress" style="height: 20px;">
+							<div class="progress-bar ${memory.swap_percent > 80 ? 'bg-danger' : memory.swap_percent > 60 ? 'bg-warning' : 'bg-info'}" 
+								style="width: ${memory.swap_percent}%">${memory.swap_percent}%</div>
+						</div>
+					</td></tr>
+					<tr><th>Swap Total / Used</th><td>${memory.swap_total_gb} GB / ${memory.swap_used_gb} GB</td></tr>
+				</table>
+			`;
+		} else {
+			return `
+				<table class="table table-bordered table-sm">
+					<tr><th width="200">Total</th><td>${memory.total_gb} GB</td></tr>
+					<tr><th>Used</th><td>${memory.used_gb} GB</td></tr>
+					<tr><th>Free</th><td>${memory.free_gb} GB</td></tr>
+				</table>
+			`;
+		}
+	}
+
+	// Generate Disk HTML
+	function generate_disk_html(disk, node_type) {
+		if (node_type === 'Local Node') {
+			let html = '<table class="table table-bordered table-sm"><thead><tr><th>Device</th><th>Mount</th><th>Type</th><th>Total</th><th>Used</th><th>Free</th><th>Usage</th></tr></thead><tbody>';
+			disk.forEach(d => {
+				html += `<tr>
+					<td><code>${d.device}</code></td>
+					<td><code>${d.mountpoint}</code></td>
+					<td>${d.fstype}</td>
+					<td>${d.total_gb} GB</td>
+					<td>${d.used_gb} GB</td>
+					<td>${d.free_gb} GB</td>
+					<td>
+						<div class="progress" style="height: 20px;">
+							<div class="progress-bar ${d.percent > 80 ? 'bg-danger' : d.percent > 60 ? 'bg-warning' : 'bg-success'}" 
+								style="width: ${d.percent}%">${d.percent}%</div>
+						</div>
+					</td>
+				</tr>`;
+			});
+			html += '</tbody></table>';
+			return html;
+		} else {
+			let html = '<table class="table table-bordered table-sm"><thead><tr><th>Filesystem</th><th>Size</th><th>Used</th><th>Available</th><th>Use%</th><th>Mounted on</th></tr></thead><tbody>';
+			disk.forEach(d => {
+				html += `<tr>
+					<td><code>${d.filesystem}</code></td>
+					<td>${d.size}</td>
+					<td>${d.used}</td>
+					<td>${d.available}</td>
+					<td><span class="badge ${d.percent.replace('%', '') > 80 ? 'badge-danger' : 'badge-success'}">${d.percent}</span></td>
+					<td><code>${d.mountpoint}</code></td>
+				</tr>`;
+			});
+			html += '</tbody></table>';
+			return html;
+		}
+	}
+
+	// Generate Processes HTML
+	function generate_processes_html(processes, type, node_type) {
+		if (node_type === 'Local Node') {
+			let html = `
+				<div style="overflow-x: auto;">
+					<table class="table table-bordered table-hover" style="font-size: 14px; margin-bottom: 0;">
+						<thead style="background: var(--table-header-bg); position: sticky; top: 0;">
+							<tr>
+								<th style="padding: 12px;">PID</th>
+								<th style="padding: 12px;">User</th>
+								<th style="padding: 12px;">Process Name</th>
+								<th style="padding: 12px; text-align: right;">CPU %</th>
+								<th style="padding: 12px; text-align: right;">Memory %</th>
+							</tr>
+						</thead>
+						<tbody>
+			`;
+			processes.forEach((p, index) => {
+				const cpuClass = p.cpu_percent > 50 ? 'text-danger' : p.cpu_percent > 25 ? 'text-warning' : '';
+				const memClass = p.memory_percent > 50 ? 'text-danger' : p.memory_percent > 25 ? 'text-warning' : '';
+				html += `
+					<tr>
+						<td style="padding: 10px; font-family: monospace;">${p.pid}</td>
+						<td style="padding: 10px;"><span class="badge badge-secondary">${p.username}</span></td>
+						<td style="padding: 10px;"><code style="font-size: 13px;">${p.name}</code></td>
+						<td style="padding: 10px; text-align: right; font-weight: 600;" class="${cpuClass}">
+							${p.cpu_percent ? p.cpu_percent.toFixed(2) : '0.00'}%
+						</td>
+						<td style="padding: 10px; text-align: right; font-weight: 600;" class="${memClass}">
+							${p.memory_percent ? p.memory_percent.toFixed(2) : '0.00'}%
+						</td>
+					</tr>
+				`;
+			});
+			html += '</tbody></table></div>';
+			return html;
+		} else {
+			let html = '<div class="code-block" style="padding: 15px; border-radius: 5px; font-size: 13px; max-height: 500px; overflow-y: auto; font-family: monospace; line-height: 1.6;">';
+			processes.forEach((line, index) => {
+				if (index === 0) {
+					// Header line
+					html += `<div style="font-weight: 600; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">${frappe.utils.escape_html(line)}</div>`;
+				} else {
+					html += `<div style="padding: 4px 0;">${frappe.utils.escape_html(line)}</div>`;
+				}
+			});
+			html += '</div>';
+			return html;
+		}
+	}
+
+	// Generate Services HTML
+	function generate_services_html(services) {
+		let html = '<div class="code-block" style="padding: 15px; border-radius: 5px; font-size: 13px; max-height: 500px; overflow-y: auto; font-family: monospace; line-height: 1.8;">';
+		services.forEach(service => {
+			// Color code based on status with icons
+			if (service.includes('RUNNING')) {
+				html += `<div style="padding: 4px 0;"><i class="fa fa-check-circle" style="color: var(--text-success);"></i> <span style="color: var(--text-success); font-weight: 500;">${frappe.utils.escape_html(service)}</span></div>`;
+			} else if (service.includes('STOPPED') || service.includes('FATAL')) {
+				html += `<div style="padding: 4px 0;"><i class="fa fa-times-circle" style="color: var(--text-danger);"></i> <span style="color: var(--text-danger); font-weight: 500;">${frappe.utils.escape_html(service)}</span></div>`;
+			} else {
+				html += `<div style="padding: 4px 0;"><i class="fa fa-circle-o"></i> ${frappe.utils.escape_html(service)}</div>`;
+			}
+		});
+		html += '</div>';
+		return html;
+	}
+
+// Global function for rebooting node from HTML field
+window.reboot_node_action = function(doc_name) {
+	frappe.confirm(
+		__('Are you sure you want to reboot this node? The system will restart immediately and all services will be interrupted.'),
+		() => {
+			// User confirmed - execute reboot
+			frappe.call({
+				method: 'bench_manager.bench_manager.doctype.bench_node_manager.bench_node_manager.reboot_node',
+				args: {
+					name: doc_name
+				},
+				freeze: true,
+				freeze_message: __('Initiating node reboot...'),
+				callback: function(r) {
+					if (r.message && r.message.success) {
+						frappe.show_alert({
+							message: r.message.message,
+							indicator: 'orange'
+						}, 10);
+					} else {
+						frappe.msgprint({
+							title: __('Reboot Failed'),
+							message: r.message ? r.message.message : __('Failed to reboot node'),
+							indicator: 'red'
+						});
+					}
+				}
+			});
+		},
+		() => {
+			// User cancelled
+			frappe.show_alert({
+				message: __('Reboot cancelled'),
+				indicator: 'blue'
+			}, 3);
+		}
+	);
+};
 
 // Dropbox access button handler
 frappe.ui.form.on('Bench Node Manager', {
