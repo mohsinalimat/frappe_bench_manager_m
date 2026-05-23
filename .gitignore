@@ -4,5 +4,10 @@
 *.swp
 tags
 bench_manager/docs/current
-research-folder
-/app_store/
+research-folder/
+# Frontend - excluded from bench_manager-only repo
+app_store/
+bench_manager/public/frontend/
+node_modules/
+yarn.lock
+package.json

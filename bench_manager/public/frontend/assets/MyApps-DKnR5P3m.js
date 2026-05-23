@@ -1,2 +1,0 @@
-import{h as p,j as s,f as t}from"./vue-vendor-BNGP8MTa.js";const a={class:"min-h-screen bg-gray-50 py-8"},r={__name:"MyApps",setup(l){return(o,e)=>(t(),p("div",a,[...e[0]||(e[0]=[s("div",{class:"w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16"},[s("div",{class:"max-w-[1600px] mx-auto"},[s("h1",{class:"text-2xl font-bold text-gray-900 mb-6"},"My Published Apps"),s("p",{class:"text-gray-600"},"My Published Apps page - Coming Soon")])],-1)])]))}};export{r as default};
-//# sourceMappingURL=MyApps-DKnR5P3m.js.map

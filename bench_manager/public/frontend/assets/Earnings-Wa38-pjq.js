@@ -1,2 +1,0 @@
-import{h as e,j as s,f as t}from"./vue-vendor-BNGP8MTa.js";const n={class:"min-h-screen bg-gray-50 py-8"},p={__name:"Earnings",setup(o){return(r,a)=>(t(),e("div",n,[...a[0]||(a[0]=[s("div",{class:"w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16"},[s("div",{class:"max-w-[1600px] mx-auto"},[s("h1",{class:"text-2xl font-bold text-gray-900 mb-6"},"Earnings"),s("p",{class:"text-gray-600"},"Earnings page - Coming Soon")])],-1)])]))}};export{p as default};
-//# sourceMappingURL=Earnings-Wa38-pjq.js.map

@@ -1,2 +1,0 @@
-import{h as a,j as s,f as e}from"./vue-vendor-BNGP8MTa.js";const p={class:"min-h-screen bg-gray-50 py-8"},c={__name:"AppAnalytics",setup(l){return(o,t)=>(e(),a("div",p,[...t[0]||(t[0]=[s("div",{class:"w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16"},[s("div",{class:"max-w-[1600px] mx-auto"},[s("h1",{class:"text-2xl font-bold text-gray-900 mb-6"},"App Analytics"),s("p",{class:"text-gray-600"},"App Analytics page - Coming Soon")])],-1)])]))}};export{c as default};
-//# sourceMappingURL=AppAnalytics-D8HkCHHp.js.map

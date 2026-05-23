@@ -1,2 +1,0 @@
-import{h as a,j as t,f as r}from"./vue-vendor-BNGP8MTa.js";const l={__name:"UserManagement",setup(n){return(s,e)=>(r(),a("div",null,[...e[0]||(e[0]=[t("h1",{class:"text-2xl font-bold text-gray-900 dark:text-white mb-6"},"User Management",-1),t("p",{class:"text-gray-600 dark:text-gray-400"},"User Management page - Coming Soon",-1)])]))}};export{l as default};
-//# sourceMappingURL=UserManagement-D6hUQldH.js.map
