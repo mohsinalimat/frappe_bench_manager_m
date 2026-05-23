@@ -1,0 +1,101 @@
+<template>
+  <div class="py-12">
+    <div class="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8">Buyer Policy</h1>
+        
+        <div class="prose prose-lg dark:prose-invert max-w-none">
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Last updated: April 25, 2026
+          </p>
+
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            This Buyer Policy governs your purchases and use of applications from the Worf App Store operated by <strong>Worf Internet Services Private Limited</strong>. By purchasing applications, you agree to comply with this policy.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">1. Account Registration</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            To purchase applications from the Worf App Store, you must create an account and provide accurate information. You are responsible for maintaining the security of your account. You must be at least 18 years old to make purchases.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">2. Application Purchases</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            When you purchase an application, you agree to:
+          </p>
+          <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 mb-4">
+            <li>Pay the listed price for the application in Indian Rupees (INR)</li>
+            <li>Use the application only in accordance with its license terms</li>
+            <li>Not redistribute or resell the application without permission</li>
+            <li>Not attempt to reverse engineer or modify the application</li>
+            <li>Comply with all applicable laws and regulations</li>
+          </ul>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">3. Application Trials</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Many applications offer free trials. Trial periods allow you to evaluate the application before purchase. Trial limitations are specified in the application description. You may use trial applications only for evaluation purposes.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">4. Payment Methods</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            We accept various payment methods including credit cards, debit cards, UPI, net banking, and other electronic payment options. All payments are processed securely through our payment partners in compliance with RBI guidelines. Prices are displayed in INR unless otherwise specified.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">5. Application Delivery</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Upon successful purchase, you will receive access to download the application. You will also receive a license key or installation instructions if required by the application. You are responsible for ensuring your system meets the application's requirements.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">6. Application Support</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Support for purchased applications is provided by the application developer. Support availability and terms are specified in the application description. We facilitate communication between buyers and developers but do not provide direct support for applications.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">7. Application Updates</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Updates to purchased applications are provided at the discretion of the developer. Some applications include free lifetime updates, while others may charge for major version upgrades. Update policies are specified in the application description.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">8. User Reviews and Ratings</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            You may submit reviews and ratings for applications you have purchased or used. Reviews must be honest, accurate, and not violate our content policies. Fake reviews or reviews for compensation are prohibited.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">9. Prohibited Activities</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Buyers agree not to:
+          </p>
+          <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 mb-4">
+            <li>Use applications for illegal purposes</li>
+            <li>Share account credentials with others</li>
+            <li>Submit false or misleading reviews</li>
+            <li>Attempt to circumvent payment or licensing</li>
+            <li>Harass developers or other users</li>
+            <li>Violate intellectual property rights</li>
+          </ul>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">10. Dispute Resolution</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            In case of disputes with developers, we provide a mediation service to help resolve issues. Final resolution decisions are at our discretion. If disputes cannot be resolved, you may escalate to consumer grievance forums as per the Consumer Protection Act, 2019.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">11. Consumer Rights</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            This policy does not affect your statutory rights under the Consumer Protection Act, 2019 and the Consumer Protection (E-Commerce) Rules, 2020. You retain all rights granted to you under applicable Indian law.
+          </p>
+
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">12. Contact</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            For questions about this Buyer Policy, please contact us at:<br>
+            Email: support@worf.cloud<br>
+            Phone: +91 120 492 7985<br>
+            <strong>Worf Internet Services Private Limited</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+// Buyer Policy page
+</script>
