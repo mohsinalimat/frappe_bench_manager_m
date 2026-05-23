@@ -5,9 +5,6 @@
 tags
 bench_manager/docs/current
 research-folder/
-# Frontend - excluded from bench_manager-only repo
-app_store/
-bench_manager/public/frontend/
+# Exclude node_modules everywhere
 node_modules/
-yarn.lock
-package.json
+app_store/node_modules/

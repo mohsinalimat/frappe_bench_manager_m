@@ -1,0 +1,1 @@
+{"version":3,"file":"pages_index.BN1ceBCA.js","names":[],"sources":["../../../../renderer/+onRenderClient.js"],"sourcesContent":["// Client-side rendering - will be updated later\nexport default async function onRenderClient(pageContext) {\n\t// Minimal implementation for now\n\t// Will be updated with full Vue integration\n}\n"],"mappings":"0KACA,SAA8B,EAAe,EAAA,oEAAa,GAAA"}
