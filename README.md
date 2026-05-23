@@ -15,9 +15,25 @@
 
 ## 📋 Overview
 
-**Bench Manager** is a comprehensive Frappe ecosystem management platform that combines enterprise-grade bench management with a modern Frappe App Store. Built on the Frappe Framework with a Vue 3 frontend, it provides powerful tools for:
+**Bench Manager** is a comprehensive Frappe ecosystem management platform that provides enterprise-grade bench management with backend APIs for a modern Frappe App Store. This repository contains the **backend Frappe app only**.
 
-- **🏪 Frappe App Store** - Modern marketplace for Frappe applications
+### 🎨 Frontend & Live Demo
+
+**Important:** The frontend (App Store UI) is maintained in a separate private repository and is **not included** in this repository.
+
+**🌐 Experience the Live Demo:** Visit **[https://worf.cloud](https://worf.cloud)** to see the App Store marketplace interface in action.
+
+### What's Included in This Repository
+
+✅ **Backend Frappe App** - Complete bench management functionality  
+✅ **REST APIs** - App Store and bench management endpoints  
+✅ **DocTypes** - All backend data models and business logic  
+✅ **Cloud Infrastructure** - Multi-cloud deployment and management  
+❌ **Frontend Application** - Vue.js frontend (private repository)
+
+### Core Capabilities
+
+- **🏪 App Store Backend** - APIs for app marketplace, reviews, and purchases
 - **🖥️ Bench Management** - Complete GUI for Frappe bench operations
 - **☁️ Cloud Infrastructure** - Deploy and manage cloud servers (AWS, Azure, GCP)
 - **🤖 Agent Deployment** - Automated server provisioning with Ansible
@@ -26,17 +42,17 @@
 - **🔐 SSL/TLS Management** - Automated certificate provisioning
 - **📊 Resource Monitoring** - Server plans and resource allocation
 
-### 🎯 Key Capabilities
+### 🎯 Key Backend Features
 
-**App Store Features:**
-- Browse and discover Frappe applications
-- Developer profiles and verification
-- App reviews and ratings
-- Category-based navigation
-- Search and filtering
-- Purchase and licensing management
-- Developer dashboard
-- Member wishlist and earnings
+**App Store Backend APIs:**
+- App listing and discovery endpoints
+- Developer profile management
+- Review and rating system
+- Category management
+- Search and filtering APIs
+- Purchase and licensing backend
+- Analytics and earnings tracking
+- Member wishlist management
 
 **Bench Management:**
 - Update and sync bench configurations
@@ -60,77 +76,53 @@
 
 ### Installation
 
-#### Option 1: Clone Repository
-
 ```bash
 # Navigate to your bench apps directory
 cd ~/frappe-bench/apps
 
 # Clone the repository
-git clone https://github.com/amitascra/frappe-worf-bench.git bench_manager
+git clone https://github.com/amitascra/frappe_bench_manager.git bench_manager
 
 # Get the app in your bench
 cd ~/frappe-bench
 bench get-app bench_manager --local
 
 # Create a new site
-bench new-site worf.local
+bench new-site your-site.local
 
 # Install the app
-bench --site worf.local install-app bench_manager
+bench --site your-site.local install-app bench_manager
 
 # Start the bench
 bench start
 ```
 
-#### Option 2: Using Frappe App Store
+### Frontend Access
 
-```bash
-# Get the app from Frappe App Store
-bench get-app bench_manager
+**Note:** The frontend is not included in this repository. To experience the App Store interface:
 
-# Create and configure site
-bench new-site worf.local
-bench --site worf.local install-app bench_manager
-bench start
-```
-
-### Frontend Setup
-
-The app includes a modern Vue 3 frontend that needs to be built:
-
-```bash
-# Navigate to the frontend directory
-cd apps/bench_manager/app_store
-
-# Install dependencies
-yarn install
-
-# Development mode
-yarn dev
-
-# Production build
-yarn build
-
-# Copy built files to Frappe public directory
-yarn copy-html-entry
-```
+- **Live Demo:** [https://worf.cloud](https://worf.cloud)
+- **Frontend Repository:** Private (contact Worf Internet Services for access)
 
 ### First-Time Setup
 
-1. **Access the Application**
-   - Backend: `http://worf.local:8000/app`
-   - Frontend: `http://worf.local:8000`
+1. **Access the Backend**
+   - Frappe Desk: `http://your-site.local:8000/app`
+   - Login with your administrator credentials
 
 2. **Configure Bench Settings**
    - Navigate to **Bench Settings** in the desk
    - Click **Sync** to populate initial data
    - Configure cloud providers if using infrastructure features
 
-3. **Configure App Store**
+3. **Configure App Store Backend**
    - Navigate to **App Store Settings**
    - Set up categories, pricing, and moderation
    - Configure payment gateways if needed
+   - API endpoints will be available for frontend integration
+
+4. **Experience the Frontend**
+   - Visit [https://worf.cloud](https://worf.cloud) to see the live marketplace
 
 ---
 
@@ -458,72 +450,14 @@ bench --site worf.local run-tests --doctype "App"
 - Write unit tests for new features
 - Update documentation
 
-### Frontend Development
+### Frontend Integration
 
-#### Setup Development Environment
-```bash
-# Navigate to frontend directory
-cd apps/bench_manager/app_store
+**Note:** The frontend is maintained separately. If you need to integrate a custom frontend:
 
-# Install dependencies
-yarn install
-
-# Start development server
-yarn dev
-```
-
-The Vite dev server will start on port `8080` and proxy requests to Frappe (port `8000`).
-
-#### Development Configuration
-Add to your `site_config.json`:
-```json
-{
-  "ignore_csrf": 1
-}
-```
-
-This prevents CSRF errors during development.
-
-#### Building for Production
-```bash
-# Build the frontend
-yarn build
-
-# Copy to Frappe public directory
-yarn copy-html-entry
-
-# Restart bench
-bench restart
-```
-
-#### Frontend Project Structure
-```
-app_store/
-├── src/
-│   ├── assets/          # Static assets
-│   ├── components/      # Reusable Vue components
-│   ├── composables/     # Vue composables
-│   ├── data/           # API calls and data fetching
-│   ├── layouts/        # Page layouts
-│   ├── pages/          # Page components
-│   │   ├── public/     # Public pages (no auth)
-│   │   ├── buyer/      # Buyer portal
-│   │   ├── developer/  # Developer portal
-│   │   └── admin/      # Admin pages
-│   ├── router.js       # Vue Router configuration
-│   ├── main.js         # Application entry point
-│   └── App.vue         # Root component
-├── public/             # Public assets
-├── index.html          # HTML template
-├── vite.config.js      # Vite configuration
-└── tailwind.config.js  # TailwindCSS configuration
-```
-
-#### Adding New Pages
-1. Create page component in `src/pages/`
-2. Add route in `src/router.js`
-3. Add meta tags for SEO
-4. Choose appropriate layout
+1. **Use the REST APIs** - All App Store and bench management features are available via API
+2. **API Documentation** - See the API Reference section below
+3. **Live Example** - Visit [https://worf.cloud](https://worf.cloud) to see the reference implementation
+4. **Contact Us** - For frontend access or custom integration support, contact Worf Internet Services
 
 ---
 
@@ -533,14 +467,17 @@ Bench Manager follows a modern multi-tier architecture:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Frontend Layer (Vue 3)                     │
+│              Frontend Layer (Separate Repository)            │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐        │
 │  │ Public Pages │  │ Member Portal│  │ Admin Desk   │        │
+│  │ (Vue 3 SPA)  │  │ (Vue 3 SPA)  │  │ (Frappe UI)  │        │
 │  └──────────────┘  └──────────────┘  └──────────────┘        │
+│                                                               │
+│  Live Demo: https://worf.cloud                                │
 └─────────────────────────────────────────────────────────────┘
-                              ↓
+                              ↓ REST APIs
 ┌─────────────────────────────────────────────────────────────┐
-│                  API Layer (Frappe Framework)                 │
+│         API Layer (This Repository - Frappe Backend)         │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐        │
 │  │ App Store    │  │ Bench Mgmt   │  │ Cloud Infra  │        │
 │  │   APIs       │  │    APIs      │  │    APIs      │        │
@@ -556,16 +493,14 @@ Bench Manager follows a modern multi-tier architecture:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Frontend Stack
+### Frontend Stack (Separate Repository)
+
+**Note:** Frontend is maintained separately. For reference:
 
 - **Framework:** Vue 3 (Composition API)
-- **Routing:** Vue Router 4
-- **UI Components:** Frappe UI
-- **Styling:** TailwindCSS
+- **UI Library:** Frappe UI + TailwindCSS
 - **Build Tool:** Vite 5
-- **State Management:** Pinia (via Frappe UI)
-- **HTTP Client:** Frappe Request (via Frappe UI)
-- **Icons:** Unplugin Icons
+- **Live Demo:** [https://worf.cloud](https://worf.cloud)
 
 ### Backend Stack
 
@@ -689,8 +624,8 @@ We welcome contributions! Please follow these guidelines:
 
 ```bash
 # Fork and clone repository
-git clone https://github.com/YOUR_USERNAME/frappe_bench_manager.git
-cd frappe_bench_manager
+git clone https://github.com/YOUR_USERNAME/frappe_bench_manager.git bench_manager
+cd bench_manager
 
 # Create feature branch
 git checkout -b feature/your-feature-name
@@ -815,9 +750,10 @@ This project is licensed under the **MIT License** - see the [LICENSE](license.t
 
 ## 📞 Contact
 
-- **Repository:** [https://github.com/amitascra/frappe-worf-bench](https://github.com/amitascra/frappe-worf-bench)
-- **Issues:** [Report a Bug](https://github.com/amitascra/frappe-worf-bench/issues/new)
-- **Feature Requests:** [Request a Feature](https://github.com/amitascra/frappe-worf-bench/issues/new?labels=enhancement)
+- **Backend Repository:** [https://github.com/amitascra/frappe_bench_manager](https://github.com/amitascra/frappe_bench_manager)
+- **Issues:** [Report a Bug](https://github.com/amitascra/frappe_bench_manager/issues/new)
+- **Feature Requests:** [Request a Feature](https://github.com/amitascra/frappe_bench_manager/issues/new?labels=enhancement)
+- **Live Demo:** [https://worf.cloud](https://worf.cloud)
 - **Company:** Worf Internet Services Private Limited
 - **Email:** support@worf.cloud
 - **Phone:** +91 120 492 7985
